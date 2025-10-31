@@ -1,0 +1,21 @@
+POST http://127.0.0.1:8000/api/v1/pedidos
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id_mesa": 2,
+  "id_empleado": 2,
+  "detalles": [
+    {
+      "id_platillo": 1,
+      "cantidad": 2,
+      "precio_unitario": 25000
+    },
+    {
+      "id_platillo": 4,
+      "cantidad": 1,
+      "precio_unitario": 4000
+    }
+  ]
+}
+

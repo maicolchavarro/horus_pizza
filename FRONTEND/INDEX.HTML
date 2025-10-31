@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Probar API - Crear Pedido</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body style="font-family: Arial; margin: 40px;">
+  <h1>🍕 Crear Pedido (Prueba API)</h1>
+
+  <label>ID Mesa:</label><br>
+  <input type="number" id="id_mesa" value="2"><br><br>
+
+  <label>ID Empleado:</label><br>
+  <input type="number" id="id_empleado" value="2"><br><br>
+
+  <h3>Detalles del Pedido</h3>
+  <div id="detalles">
+    <div>
+      <label>ID Platillo:</label>
+      <input type="number" class="id_platillo" value="1">
+      <label>Cantidad:</label>
+      <input type="number" class="cantidad" value="2">
+      <label>Precio Unitario:</label>
+      <input type="number" class="precio_unitario" value="25000">
+    </div>
+    <br>
+    <div>
+      <label>ID Platillo:</label>
+      <input type="number" class="id_platillo" value="4">
+      <label>Cantidad:</label>
+      <input type="number" class="cantidad" value="1">
+      <label>Precio Unitario:</label>
+      <input type="number" class="precio_unitario" value="4000">
+    </div>
+  </div>
+
+  <br>
+  <button onclick="enviarPedido()">Enviar Pedido</button>
+
+  <h3>📦 Respuesta del Servidor:</h3>
+  <pre id="respuesta" style="background:#f2f2f2; padding:10px; border-radius:5px;"></pre>
+
+  <script>
+    async function enviarPedido() {
+      const detalles = Array.from(document.querySelectorAll('#detalles div')).map(div => ({
+        id_platillo: parseInt(div.querySelector('.id_platillo').value),
+        cantidad: parseInt(div.querySelector('.cantidad').value),
+        precio_unitario: parseFloat(div.querySelector('.precio_unitario').value)
+      }));
+
+      const pedido = {
+        id_mesa: parseInt(document.getElementById('id_mesa').value),
+        id_empleado: parseInt(document.getElementById('id_empleado').value),
+        detalles
+      };
+
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/v1/pedidos', pedido, {
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+        });
+        document.getElementById('respuesta').textContent = JSON.stringify(response.data, null, 2);
+      } catch (error) {
+        document.getElementById('respuesta').textContent = error.response
+          ? JSON.stringify(error.response.data, null, 2)
+          : error.message;
+      }
+    }
+  </script>
+</body>
+</html>
