@@ -1,21 +1,47 @@
-POST http://127.0.0.1:8000/api/v1/pedidos
+#login
+
+POST http://127.0.0.1:8000/api/v1/login
 Content-Type: application/json
 Accept: application/json
 
 {
-  "id_mesa": 2,
-  "id_empleado": 2,
-  "detalles": [
-    {
-      "id_platillo": 1,
-      "cantidad": 2,
-      "precio_unitario": 25000
-    },
-    {
-      "id_platillo": 4,
-      "cantidad": 1,
-      "precio_unitario": 4000
-    }
-  ]
+  "usuario": "laura_mesera",
+  "password": "mesera123"
 }
 
+###
+#crear mesa
+
+POST http://127.0.0.1:8000/api/v1/mesas
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id_sucursal": 1,
+  "numero_mesa": 5,
+  "capacidad": 6,
+  "estado": "Disponible"
+}
+
+###Listar todas las mesas
+GET http://127.0.0.1:8000/api/v1/mesas
+Accept: application/json
+
+###Listar mesas de una sucursal
+GET http://127.0.0.1:8000/api/v1/mesas?id_sucursal=1
+Accept: application/json
+
+###Cambiar estado de mesa
+PUT http://127.0.0.1:8000/api/v1/mesas/5
+Content-Type: application/json
+
+{
+  "estado": "Ocupada"
+}
+
+###  Eliminar mesa
+DELETE http://127.0.0.1:8000/api/v1/mesas/3
+
+### Obtener menú (agrupado por categoría)
+GET http://127.0.0.1:8000/api/v1/menu
+Accept: application/json

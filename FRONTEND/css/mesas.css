@@ -1,0 +1,71 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ff9966, #ff4d4d);
+  color: white;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+button {
+  background-color: #fff;
+  color: #ff4d4d;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #ffcccc;
+}
+
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.mesa-card {
+  background: white;
+  color: #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.mesa-card:hover {
+  transform: scale(1.05);
+}
+
+.mesa-card.disponible {
+  border-left: 6px solid #4CAF50;
+}
+
+.mesa-card.ocupada {
+  border-left: 6px solid #FF9800;
+}
+
+.mesa-card.reservada {
+  border-left: 6px solid #f44336;
+}
+
+.mesa-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.estado {
+  font-weight: bold;
+}

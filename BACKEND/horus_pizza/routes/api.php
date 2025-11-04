@@ -1,13 +1,22 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PedidoController;
+use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\MesaController;
 
 Route::prefix('v1')->group(function () {
-    Route::get('/pedidos', [PedidoController::class, 'index']);
-    Route::get('/pedidos/{id}', [PedidoController::class, 'show']);
-    Route::post('/pedidos', [PedidoController::class, 'store']);
-    Route::put('/pedidos/{id}', [PedidoController::class, 'update']);
-    Route::delete('/pedidos/{id}', [PedidoController::class, 'destroy']);
+    // ✅ Endpoint de Login
+    Route::post('/login', [LoginController::class, 'login']);
+
+    // ✅ Endpoints de Mesas
+    Route::get('/mesas', [MesaController::class, 'index']);
+    Route::post('/mesas', [MesaController::class, 'store']);
+    Route::put('/mesas/{id}', [MesaController::class, 'update']);
+    Route::delete('/mesas/{id}', [MesaController::class, 'destroy']);
+
+     // ✅ Endpoints del menú
+    Route::get('/menu', [MenuController::class, 'index']); // Agrupado por categoría
+    Route::get('/platillos', [MenuController::class, 'all']); // Todos los platillos
+
+
 });

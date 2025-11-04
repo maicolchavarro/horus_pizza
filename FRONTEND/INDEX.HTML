@@ -1,71 +1,233 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Probar API - Crear Pedido</title>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horus Pizza - El Dios del Sabor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #C8A882 0%, #8B7355 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.03) 0px, transparent 1px, transparent 40px, rgba(0,0,0,0.03) 41px),
+                repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, transparent 1px, transparent 40px, rgba(0,0,0,0.03) 41px);
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .brand-name {
+            font-size: 72px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .horus {
+            color: #E85D3D;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .pizza {
+            color: #6FA556;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .eye-icon {
+            width: 100px;
+            height: 100px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .eye-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .tagline {
+            font-size: 28px;
+            color: #333;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .welcome-text {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #E85D3D 0%, #d94826 100%);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(232, 93, 61, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(232, 93, 61, 0.6);
+            background: linear-gradient(135deg, #d94826 0%, #E85D3D 100%);
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+
+        .decorative-line {
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, #E85D3D 0%, #6FA556 100%);
+            margin: 20px auto;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .brand-name {
+                font-size: 48px;
+            }
+            
+            .eye-icon {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .tagline {
+                font-size: 18px;
+            }
+            
+            .logo-container {
+                padding: 30px 40px;
+            }
+            
+            .btn-login {
+                padding: 15px 40px;
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
-<body style="font-family: Arial; margin: 40px;">
-  <h1>🍕 Crear Pedido (Prueba API)</h1>
-
-  <label>ID Mesa:</label><br>
-  <input type="number" id="id_mesa" value="2"><br><br>
-
-  <label>ID Empleado:</label><br>
-  <input type="number" id="id_empleado" value="2"><br><br>
-
-  <h3>Detalles del Pedido</h3>
-  <div id="detalles">
-    <div>
-      <label>ID Platillo:</label>
-      <input type="number" class="id_platillo" value="1">
-      <label>Cantidad:</label>
-      <input type="number" class="cantidad" value="2">
-      <label>Precio Unitario:</label>
-      <input type="number" class="precio_unitario" value="25000">
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <div class="brand-title">
+                <span class="brand-name horus">HORUS</span>
+                <div class="eye-icon">
+                    <img src="logo_Horus.png" alt="Ojo de Horus">
+                </div>
+                <span class="brand-name pizza">PIZZA</span>
+            </div>
+            <div class="decorative-line"></div>
+            <div class="tagline">El Dios del Sabor</div>
+        </div>
+        
+        <p class="welcome-text">¡Bienvenido al sabor divino!</p>
+        
+        <button class="btn-login" onclick="goToLogin()">Acceder al Sistema</button>
     </div>
-    <br>
-    <div>
-      <label>ID Platillo:</label>
-      <input type="number" class="id_platillo" value="4">
-      <label>Cantidad:</label>
-      <input type="number" class="cantidad" value="1">
-      <label>Precio Unitario:</label>
-      <input type="number" class="precio_unitario" value="4000">
-    </div>
-  </div>
 
-  <br>
-  <button onclick="enviarPedido()">Enviar Pedido</button>
+    <script>
+        function goToLogin() {
+            // ✅ Ruta correcta al archivo de login
+            window.location.href = 'html/login.html';
+        }
 
-  <h3>📦 Respuesta del Servidor:</h3>
-  <pre id="respuesta" style="background:#f2f2f2; padding:10px; border-radius:5px;"></pre>
-
-  <script>
-    async function enviarPedido() {
-      const detalles = Array.from(document.querySelectorAll('#detalles div')).map(div => ({
-        id_platillo: parseInt(div.querySelector('.id_platillo').value),
-        cantidad: parseInt(div.querySelector('.cantidad').value),
-        precio_unitario: parseFloat(div.querySelector('.precio_unitario').value)
-      }));
-
-      const pedido = {
-        id_mesa: parseInt(document.getElementById('id_mesa').value),
-        id_empleado: parseInt(document.getElementById('id_empleado').value),
-        detalles
-      };
-
-      try {
-        const response = await axios.post('http://127.0.0.1:8000/api/v1/pedidos', pedido, {
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+        // Efecto de rotación suave con el mouse
+        document.addEventListener('mousemove', (e) => {
+            const container = document.querySelector('.logo-container');
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            container.style.transform = `perspective(1000px) rotateY(${x / 50}deg) rotateX(${-y / 50}deg)`;
         });
-        document.getElementById('respuesta').textContent = JSON.stringify(response.data, null, 2);
-      } catch (error) {
-        document.getElementById('respuesta').textContent = error.response
-          ? JSON.stringify(error.response.data, null, 2)
-          : error.message;
-      }
-    }
-  </script>
+
+        document.addEventListener('mouseleave', () => {
+            const container = document.querySelector('.logo-container');
+            container.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+        });
+    </script>
 </body>
 </html>

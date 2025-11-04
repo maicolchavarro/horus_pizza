@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Models;
 
@@ -9,7 +9,7 @@ class DetallePedido extends Model
 {
     use HasFactory;
 
-    protected $table = 'Detalle_pedido';
+    protected $table = 'detalle_pedido';
     protected $primaryKey = 'id_detalle';
     public $timestamps = false;
 
@@ -25,5 +25,11 @@ class DetallePedido extends Model
     public function pedido()
     {
         return $this->belongsTo(Pedido::class, 'id_pedido', 'id_pedido');
+    }
+
+    // Relación: Detalle pertenece a un Platillo del menú
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'id_platillo', 'id_platillo');
     }
 }

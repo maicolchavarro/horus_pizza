@@ -9,7 +9,8 @@ class Pedido extends Model
 {
     use HasFactory;
 
-    protected $table = 'Pedidos';
+    // ⚠️ Nombre de la tabla en minúsculas para evitar errores
+    protected $table = 'pedidos';
     protected $primaryKey = 'id_pedido';
     public $timestamps = false;
 
@@ -21,9 +22,21 @@ class Pedido extends Model
         'total'
     ];
 
-    // Relación: Pedido tiene muchos Detalles
+    // 🔗 Relación: Pedido tiene muchos Detalles
     public function detalles()
     {
         return $this->hasMany(DetallePedido::class, 'id_pedido', 'id_pedido');
+    }
+
+    // 🔗 Relación: Pedido pertenece a una Mesa
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class, 'id_mesa', 'id_mesa');
+    }
+
+    // 🔗 Relación: Pedido pertenece a un Empleado
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class, 'id_empleado', 'id_empleado');
     }
 }
