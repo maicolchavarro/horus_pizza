@@ -1,0 +1,204 @@
+/* FRONTEND/css/menu.css */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #faf6f3;
+  color: #333;
+}
+
+/* --------- BARRA SUPERIOR --------- */
+.top-bar {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  position: relative;
+}
+
+.top-bar h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+/* Carrito arriba a la derecha */
+.cart-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Badge del carrito */
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: #e76f51;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 10px;
+  padding: 2px 6px;
+}
+
+.oculto {
+  display: none;
+}
+
+/* Animación carrito */
+@keyframes cart-bump {
+  0%   { transform: translateY(-50%) scale(1); }
+  20%  { transform: translateY(-50%) scale(1.15); }
+  100% { transform: translateY(-50%) scale(1); }
+}
+
+.cart-bump {
+  animation: cart-bump 0.25s ease-out;
+}
+
+/* --------- TABS CATEGORÍAS --------- */
+.tabs {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+#tabsCategorias {
+  display: flex;
+  overflow-x: auto;
+}
+
+.tab-cat {
+  flex: 1;
+  text-align: center;
+  padding: 10px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  color: #999;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-cat.activo {
+  color: #e76f51;
+  border-bottom-color: #e76f51;
+}
+
+/* --------- LISTA DE PRODUCTOS --------- */
+.lista-productos {
+  padding: 8px 12px 70px; /* espacio para la bottom-nav */
+}
+
+#listaProductos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item-producto {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  gap: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Imagen del producto */
+.item-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Info del producto */
+.item-info {
+  flex: 1;
+}
+
+.item-nombre {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 3px;
+}
+
+.item-desc {
+  font-size: 12px;
+  color: #777;
+}
+
+.item-precio {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e67300;
+  margin-top: 4px;
+}
+
+/* Botón Agregar */
+.item-accion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.btn-agregar {
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-agregar.btn-added {
+  transform: scale(0.96);
+  box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.3);
+  background: #ff7a26;
+}
+
+/* --------- BARRA INFERIOR --------- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.bottom-nav button {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.bottom-nav button span:first-child {
+  font-size: 18px;
+}
+
+.bottom-nav button.activo {
+  color: #e76f51;
+}

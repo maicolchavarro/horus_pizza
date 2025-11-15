@@ -1,361 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🍕 Horus Pizza - Pedidos</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f6f6f6;
-    margin: 0;
-    padding: 20px;
-  }
-  h1, h2 {
-    text-align: center;
-  }
-  .menu, .pedido, .cajero {
-    background: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 15px auto;
-    max-width: 750px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-  }
-  .menu-item {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #fafafa;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 10px;
-    transition: transform 0.2s ease;
-  }
-  .menu-item:hover {
-    transform: scale(1.03);
-  }
-  .menu-item img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-  }
-  .menu-item h4 {
-    margin: 10px 0 5px;
-  }
-  .menu-item p {
-    color: #333;
-    margin: 0 0 10px;
-  }
-  button {
-    background: #e63946;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #d62828;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  table th, table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-  }
-  .total {
-    font-weight: bold;
-    font-size: 18px;
-    text-align: right;
-    margin-top: 10px;
-  }
-  .btn-guardar {
-    width: 100%;
-    background: #1d3557;
-  }
-  .cajero table {
-    margin-top: 15px;
-  }
-
-  /* ===== Modal ===== */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    justify-content: center;
-    align-items: center;
-  }
-  .modal-content {
-    background: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    animation: fadeIn 0.3s ease-in-out;
-  }
-  @keyframes fadeIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .close-btn {
-    background: #d62828;
-    border: none;
-    color: white;
-    font-size: 18px;
-    border-radius: 50%;
-    width: 30px; height: 30px;
-    cursor: pointer;
-  }
-  .btn-print {
-    background: #457b9d;
-    margin-top: 15px;
-    width: 100%;
-  }
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-    #ticket-print, #ticket-print * {
-      visibility: visible;
-    }
-    #ticket-print {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-    }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/menu.css">
 </head>
 <body>
+ <header class="top-bar">
+  <h1>Horus Pizza</h1>
 
-<h1>🍕 Horus Pizza - Sistema de Pedidos</h1>
+  <!-- Carrito arriba a la derecha -->
+  <button id="cartIcon" class="cart-icon" onclick="irPedidos()">
+    🧾
+    <span id="badgeCarrito" class="badge oculto">0</span>
+  </button>
+</header>
 
-<div class="menu">
-  <h2>Menú</h2>
-  <div id="menu-container" class="menu-grid"></div>
-</div>
+  <!-- Tabs de categorías -->
+  <nav class="tabs">
+    <div id="tabsCategorias"></div>
+  </nav>
 
-<div class="pedido">
-  <h2>Tu Pedido</h2>
-  <table id="tabla-pedido">
-    <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Cant.</th>
-        <th>Precio</th>
-        <th>Subtotal</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <div class="total">Total: $<span id="total">0</span></div>
-  <button class="btn-guardar" onclick="guardarPedido()">Guardar Pedido</button>
-</div>
+  <!-- Lista de productos -->
+  <main class="lista-productos">
+    <ul id="listaProductos"></ul>
+  </main>
 
-<div class="cajero">
-  <h2>Pedidos Realizados</h2>
-  <table id="tabla-cajero">
-    <thead>
-      <tr>
-        <th>ID Pedido</th>
-        <th>Mesa</th>
-        <th>Empleado</th>
-        <th>Total</th>
-        <th>Detalles</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+  <!-- Barra inferior -->
+  <nav class="bottom-nav">
+    <button onclick="irMesas()">
+      <span>🪑</span>
+      <small>Mesas</small>
+    </button>
 
-<!-- ===== Modal Detalle Pedido ===== -->
-<div class="modal" id="modal-detalle">
-  <div class="modal-content" id="ticket-print">
-    <div class="modal-header">
-      <h3>🧾 Detalle del Pedido</h3>
-      <button class="close-btn" onclick="cerrarModal()">×</button>
-    </div>
-    <p><strong>ID Pedido:</strong> <span id="modal-id"></span></p>
-    <p><strong>Mesa:</strong> <span id="modal-mesa"></span> | <strong>Empleado:</strong> <span id="modal-empleado"></span></p>
-    <table id="tabla-detalle">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cant.</th>
-          <th>Precio</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div class="total">Total: $<span id="modal-total">0</span></div>
-    <button class="btn-print" onclick="imprimirTicket()">🖨️ Imprimir / Guardar Ticket</button>
-  </div>
-</div>
+    <button class="activo" onclick="irMenu()">
+      <span>🍕</span>
+      <small>Menú</small>
+    </button>
 
-<script>
-// ======= CONFIGURACIÓN =========
-const ID_MESA = 1;
-const ID_EMPLEADO = 2;
+    <button onclick="irPedidos()" class="carrito-btn">
+      <span>🧾</span>
+      <small>Pedidos</small>
+      <span id="badgeCarrito" class="badge oculto">0</span>
+    </button>
+  </nav>
 
-// ======= MENÚ CON IMÁGENES =========
-const menuProvisional = [
-  { id_platillo: 1, nombre: "Pizza Margarita", precio: 25000, imagen: "https://images.unsplash.com/photo-1601924579533-7e2fbe2b0b13?w=800" },
-  { id_platillo: 2, nombre: "Pizza Hawaiana", precio: 28000, imagen: "https://images.unsplash.com/photo-1601924994981-30da09aeb8b9?w=800" },
-  { id_platillo: 3, nombre: "Pizza Mexicana", precio: 30000, imagen: "https://images.unsplash.com/photo-1594007654729-407eedc4be3d?w=800" },
-  { id_platillo: 4, nombre: "Lasagna de Pollo", precio: 22000, imagen: "https://images.unsplash.com/photo-1604908177225-df6e9b4a2f97?w=800" },
-  { id_platillo: 5, nombre: "Gaseosa 500ml", precio: 4000, imagen: "https://images.unsplash.com/photo-1613470206960-5a7a61ff59a1?w=800" },
-  { id_platillo: 6, nombre: "Jugo Natural", precio: 6000, imagen: "https://images.unsplash.com/photo-1612197527762-9d66b24f9f4d?w=800" },
-];
-
-const menuContainer = document.getElementById("menu-container");
-let pedido = [];
-let pedidosGuardados = [];
-
-// ======= CARGAR MENÚ =========
-function cargarMenu() {
-  menuContainer.innerHTML = menuProvisional.map(item => `
-    <div class="menu-item">
-      <img src="${item.imagen}" alt="${item.nombre}">
-      <h4>${item.nombre}</h4>
-      <p>$${item.precio}</p>
-      <button onclick="agregarAlPedido(${item.id_platillo}, '${item.nombre}', ${item.precio})">Agregar</button>
-    </div>
-  `).join('');
-}
-
-// ======= AGREGAR AL PEDIDO =========
-function agregarAlPedido(id, nombre, precio) {
-  const existente = pedido.find(p => p.id_platillo === id);
-  if (existente) {
-    existente.cantidad++;
-  } else {
-    pedido.push({ id_platillo: id, nombre, cantidad: 1, precio_unitario: precio });
-  }
-  renderPedido();
-}
-
-// ======= RENDERIZAR PEDIDO =========
-function renderPedido() {
-  const tbody = document.querySelector("#tabla-pedido tbody");
-  tbody.innerHTML = "";
-
-  let total = 0;
-  pedido.forEach((item, i) => {
-    const subtotal = item.cantidad * item.precio_unitario;
-    total += subtotal;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${item.nombre}</td>
-      <td>${item.cantidad}</td>
-      <td>$${item.precio_unitario}</td>
-      <td>$${subtotal}</td>
-      <td><button onclick="eliminarItem(${i})">❌</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById("total").textContent = total;
-}
-
-// ======= ELIMINAR PRODUCTO =========
-function eliminarItem(index) {
-  pedido.splice(index, 1);
-  renderPedido();
-}
-
-// ======= GUARDAR PEDIDO =========
-function guardarPedido() {
-  if (pedido.length === 0) return alert("No hay productos en el pedido");
-
-  const total = pedido.reduce((sum, p) => sum + p.cantidad * p.precio_unitario, 0);
-  const nuevoPedido = {
-    id_pedido: pedidosGuardados.length + 1,
-    id_mesa: ID_MESA,
-    id_empleado: ID_EMPLEADO,
-    total,
-    detalles: pedido.map(p => ({ ...p })) // copia
-  };
-
-  pedidosGuardados.push(nuevoPedido);
-  alert("✅ Pedido guardado correctamente");
-
-  pedido = [];
-  renderPedido();
-  renderCajero();
-}
-
-// ======= MOSTRAR PEDIDOS EN CAJERO =========
-function renderCajero() {
-  const tbody = document.querySelector("#tabla-cajero tbody");
-  tbody.innerHTML = pedidosGuardados.map(p => `
-    <tr>
-      <td>${p.id_pedido}</td>
-      <td>${p.id_mesa}</td>
-      <td>${p.id_empleado}</td>
-      <td>$${p.total}</td>
-      <td><button onclick="verDetalles(${p.id_pedido})">👁️ Ver</button></td>
-    </tr>
-  `).join('');
-}
-
-// ======= VER DETALLES EN MODAL =========
-function verDetalles(id_pedido) {
-  const pedido = pedidosGuardados.find(p => p.id_pedido === id_pedido);
-  const tbody = document.querySelector("#tabla-detalle tbody");
-  document.getElementById("modal-id").textContent = pedido.id_pedido;
-  document.getElementById("modal-mesa").textContent = pedido.id_mesa;
-  document.getElementById("modal-empleado").textContent = pedido.id_empleado;
-
-  tbody.innerHTML = pedido.detalles.map(d => `
-    <tr>
-      <td>${d.nombre}</td>
-      <td>${d.cantidad}</td>
-      <td>$${d.precio_unitario}</td>
-      <td>$${d.cantidad * d.precio_unitario}</td>
-    </tr>
-  `).join('');
-
-  document.getElementById("modal-total").textContent = pedido.total;
-  document.getElementById("modal-detalle").style.display = "flex";
-}
-
-// ======= CERRAR MODAL =========
-function cerrarModal() {
-  document.getElementById("modal-detalle").style.display = "none";
-}
-
-// ======= IMPRIMIR TICKET =========
-function imprimirTicket() {
-  window.print();
-}
-
-// ======= INICIO =========
-cargarMenu();
-renderCajero();
-</script>
-
+  <script src="../js/menu.js"></script>
 </body>
 </html>

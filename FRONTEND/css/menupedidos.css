@@ -1,0 +1,77 @@
+/* FRONTEND/css/menupedidos.css */
+
+@import url('./menu.css');
+
+.lista-pedido {
+  padding: 10px 12px 90px; /* espacio para footer + bottom-nav */
+}
+
+#listaPedido {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item-detalle {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.item-detalle-info {
+  flex: 1;
+}
+
+.item-detalle-nombre {
+  font-weight: 600;
+}
+
+.item-detalle-cantidad {
+  font-size: 13px;
+  color: #777;
+}
+
+.item-detalle-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.btn-mini {
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+
+.btn-mini.rojo {
+  border-color: #e76f51;
+  color: #e76f51;
+}
+
+.footer-pedido {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 56px; /* altura de bottom-nav */
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-pedido button {
+  background: #e76f51;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}

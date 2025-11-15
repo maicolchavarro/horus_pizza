@@ -1,0 +1,137 @@
+/* FRONTEND/css/cocina.css */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #121212;
+  color: #f5f5f5;
+}
+
+/* Header */
+.top-bar {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f1f1f;
+  border-bottom: 1px solid #333;
+}
+
+.top-bar h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.btn-salir {
+  background: #e76f51;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Contenedor de pedidos */
+.pedidos-container {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+/* Tarjeta de pedido */
+.pedido-card {
+  background: #1e1e1e;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #2a2a2a;
+}
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.pedido-mesa {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.pedido-estado {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.estado-pendiente {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.estado-preparacion {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+/* Info adicional */
+.pedido-info {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+
+/* Lista de items */
+.pedido-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.pedido-items li {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+/* Botones de acción */
+.pedido-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  flex: 1;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-tomar {
+  background: #2196f3;
+  color: #fff;
+}
+
+.btn-listo {
+  background: #4caf50;
+  color: #fff;
+}
+
+/* Footer */
+.footer-info {
+  text-align: center;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #888;
+  border-top: 1px solid #333;
+}

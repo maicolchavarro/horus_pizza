@@ -9,7 +9,7 @@ class Menu extends Model
 {
     use HasFactory;
 
-    protected $table = 'Menu';
+    protected $table = 'menu';
     protected $primaryKey = 'id_platillo';
     public $timestamps = false;
 
@@ -22,7 +22,7 @@ class Menu extends Model
         'imagen'
     ];
 
-    // ✅ Relación con la categoría
+    // (Opcional) Relación con Categoria
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');

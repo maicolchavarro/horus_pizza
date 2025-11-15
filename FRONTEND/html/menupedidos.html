@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/menupedidos.css">
+</head>
+<body>
+  <header class="top-bar">
+    <h1 id="tituloPedido">Pedido</h1>
+  </header>
+
+  <main class="lista-pedido">
+    <ul id="listaPedido"></ul>
+  </main>
+
+  <footer class="footer-pedido">
+    <div>
+      Total: $<span id="totalPedido">0</span>
+    </div>
+    <button id="btnEnviar">Enviar a cocina</button>
+  </footer>
+
+  <nav class="bottom-nav">
+    <button onclick="irMesas()">
+      <span>🪑</span>
+      <small>Mesas</small>
+    </button>
+
+    <button onclick="irMenu()">
+      <span>🍕</span>
+      <small>Menú</small>
+    </button>
+
+    <button class="activo">
+      <span>🧾</span>
+      <small>Pedidos</small>
+    </button>
+  </nav>
+
+  <script src="../js/menupedidos.js"></script>
+</body>
+</html>

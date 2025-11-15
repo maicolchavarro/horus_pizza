@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Models;
 
@@ -21,14 +21,8 @@ class DetallePedido extends Model
         'subtotal'
     ];
 
-    // Relación: Detalle pertenece a un Pedido
-    public function pedido()
-    {
-        return $this->belongsTo(Pedido::class, 'id_pedido', 'id_pedido');
-    }
-
-    // Relación: Detalle pertenece a un Platillo del menú
-    public function menu()
+    // ✅ platillo del menú
+    public function platillo()
     {
         return $this->belongsTo(Menu::class, 'id_platillo', 'id_platillo');
     }

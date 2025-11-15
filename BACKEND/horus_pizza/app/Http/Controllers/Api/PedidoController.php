@@ -4,182 +4,186 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pedido;
-use App\Models\DetallePedido;
+use App\Models\Mesa;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class PedidoController extends Controller
 {
-    // 🧾 Listar todos los pedidos con detalles, mesa, empleado y platillos
+    // ✔ LISTAR TODOS LOS PEDIDOS
     public function index()
     {
-        $pedidos = Pedido::with([
-            'detalles.menu:id_platillo,nombre,precio',
-            'mesa:id_mesa,numero_mesa,estado',
-            'empleado:id_empleado,nombre,apellido'
-        ])->get();
-
-        return response()->json($pedidos);
+        return response()->json(Pedido::all());
     }
 
-    // 👀 Ver un pedido por ID con detalles y platillos
+    // ✔ MOSTRAR UN PEDIDO POR ID
     public function show($id)
     {
-        $pedido = Pedido::with([
-            'detalles.menu:id_platillo,nombre,precio',
-            'mesa:id_mesa,numero_mesa,estado',
-            'empleado:id_empleado,nombre,apellido'
-        ])->find($id);
-
-        if (!$pedido) {
-            return response()->json(['message' => 'Pedido no encontrado'], 404);
-        }
-
+        $pedido = Pedido::findOrFail($id);
         return response()->json($pedido);
     }
 
-    // ➕ Crear un nuevo pedido con detalles
-    public function store(Request $request)
+
+  
+    // ✔ Pedido con mesa, empleado y detalles (con platillos)
+    public function showCompleto($id)
     {
-        $validated = $request->validate([
-            'id_mesa' => 'required|integer',
-            'id_empleado' => 'required|integer',
-            'detalles' => 'required|array|min:1',
-            'detalles.*.id_platillo' => 'required|integer',
-            'detalles.*.cantidad' => 'required|integer|min:1',
-            'detalles.*.precio_unitario' => 'required|numeric|min:0',
-        ]);
+        $pedido = Pedido::with([
+            'mesa',
+            'empleado',
+            'detalles.platillo'
+        ])->findOrFail($id);
 
-        try {
-            DB::beginTransaction();
+        return response()->json($pedido);
+    }
+    
 
-            // Calcular total del pedido
-            $total = collect($validated['detalles'])->sum(
-                fn($d) => $d['cantidad'] * $d['precio_unitario']
-            );
+    // ✔ Obtener pedido activo de una mesa
+public function pedidoActivoPorMesa($idMesa)
+{
+    $pedido = Pedido::where('id_mesa', $idMesa)
+        ->whereIn('estado', ['Pendiente', 'En preparación', 'Listo', 'Servido'])
+        ->orderByDesc('fecha_pedido')
+        ->first();
 
-            // Crear el pedido
-            $pedido = Pedido::create([
-                'id_mesa' => $validated['id_mesa'],
-                'id_empleado' => $validated['id_empleado'],
-                'estado' => 'Pendiente',
-                'total' => $total,
-            ]);
-
-            // Insertar los detalles del pedido
-            foreach ($validated['detalles'] as $detalle) {
-                DetallePedido::create([
-                    'id_pedido' => $pedido->id_pedido,
-                    'id_platillo' => $detalle['id_platillo'],
-                    'cantidad' => $detalle['cantidad'],
-                    'precio_unitario' => $detalle['precio_unitario'],
-                    'subtotal' => $detalle['cantidad'] * $detalle['precio_unitario'],
-                ]);
-            }
-
-            DB::commit();
-
-            // Cargar relaciones al pedido creado
-            $pedido->load([
-                'detalles.menu:id_platillo,nombre,precio',
-                'mesa:id_mesa,numero_mesa,estado',
-                'empleado:id_empleado,nombre,apellido'
-            ]);
-
-            return response()->json([
-                'message' => '✅ Pedido creado correctamente',
-                'pedido' => $pedido
-            ], 201);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'error' => '❌ Error al crear pedido',
-                'detalle' => $e->getMessage()
-            ], 500);
-        }
+    if (!$pedido) {
+        return response()->json([
+            'message' => 'No hay pedido activo para esta mesa'
+        ], 404);
     }
 
-    // 🔄 Actualizar un pedido y sus detalles
+    return response()->json($pedido);
+}
+
+
+
+    // ✔ CREAR PEDIDO
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'id_mesa'     => 'required|integer|exists:mesas,id_mesa',
+        'id_empleado' => 'required|integer|exists:empleados,id_empleado',
+    ]);
+
+    // ✅ Verificar que no haya un pedido activo en esa mesa
+    $existeActivo = Pedido::where('id_mesa', $validated['id_mesa'])
+        ->whereIn('estado', ['Pendiente', 'En preparación', 'Listo', 'Servido'])
+        ->exists();
+
+    if ($existeActivo) {
+        return response()->json([
+            'message' => 'La mesa ya tiene un pedido activo'
+        ], 400);
+    }
+
+    // ❌ YA NO TOCAMOS EL ESTADO DE LA MESA AQUÍ
+
+    $pedido = Pedido::create([
+        'id_mesa'     => $validated['id_mesa'],
+        'id_empleado' => $validated['id_empleado'],
+        'estado'      => 'Pendiente',
+        'total'       => 0
+    ]);
+
+    return response()->json([
+        'message' => 'Pedido creado correctamente',
+        'pedido'  => $pedido
+    ], 201);
+}
+
+
+    // ✔ ACTUALIZAR PEDIDO
     public function update(Request $request, $id)
-    {
-        $pedido = Pedido::find($id);
+{
+    $pedido = Pedido::findOrFail($id);
 
-        if (!$pedido) {
-            return response()->json(['message' => 'Pedido no encontrado'], 404);
+    $validated = $request->validate([
+        'id_mesa'     => 'sometimes|integer|exists:mesas,id_mesa',
+        'id_empleado' => 'sometimes|integer|exists:empleados,id_empleado',
+        'estado'      => 'sometimes|string',
+        'total'       => 'sometimes|numeric'
+    ]);
+
+    // 🔁 Cambio de mesa (si lo usas)
+    if ($request->has('id_mesa')) {
+        $mesaAnterior = Mesa::find($pedido->id_mesa);
+        if ($mesaAnterior) {
+            $mesaAnterior->estado = 'Disponible';
+            $mesaAnterior->save();
         }
 
-        try {
-            DB::beginTransaction();
+        $mesaNueva = Mesa::find($validated['id_mesa']);
 
-            // Actualizar campos principales si vienen en la request
-            $pedido->update([
-                'id_mesa' => $request->id_mesa ?? $pedido->id_mesa,
-                'id_empleado' => $request->id_empleado ?? $pedido->id_empleado,
-                'estado' => $request->estado ?? $pedido->estado,
-            ]);
+        $tieneActivo = Pedido::where('id_mesa', $validated['id_mesa'])
+            ->where('id_pedido', '!=', $pedido->id_pedido)
+            ->whereIn('estado', ['Pendiente', 'En preparación', 'Listo', 'Servido'])
+            ->exists();
 
-            // Si vienen nuevos detalles, reemplazarlos
-            if ($request->has('detalles')) {
-                $pedido->detalles()->delete();
-
-                $total = 0;
-                foreach ($request->detalles as $detalle) {
-                    $subtotal = $detalle['cantidad'] * $detalle['precio_unitario'];
-                    $total += $subtotal;
-
-                    DetallePedido::create([
-                        'id_pedido' => $pedido->id_pedido,
-                        'id_platillo' => $detalle['id_platillo'],
-                        'cantidad' => $detalle['cantidad'],
-                        'precio_unitario' => $detalle['precio_unitario'],
-                        'subtotal' => $subtotal,
-                    ]);
-                }
-
-                // Actualizar total del pedido
-                $pedido->update(['total' => $total]);
-            }
-
-            DB::commit();
-
-            $pedido->load([
-                'detalles.menu:id_platillo,nombre,precio',
-                'mesa:id_mesa,numero_mesa,estado',
-                'empleado:id_empleado,nombre,apellido'
-            ]);
-
-            return response()->json([
-                'message' => '✅ Pedido actualizado correctamente',
-                'pedido' => $pedido
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'error' => '❌ Error al actualizar pedido',
-                'detalle' => $e->getMessage()
-            ], 500);
+        if ($tieneActivo) {
+            return response()->json(['message' => 'La nueva mesa ya tiene un pedido activo'], 400);
         }
     }
 
-    // ❌ Eliminar pedido y detalles
+    // ✅ Si cambia el estado del pedido, actualizamos el estado de la mesa
+    if (isset($validated['estado'])) {
+        $mesa = Mesa::find($pedido->id_mesa);
+
+        if ($mesa) {
+            if (in_array($validated['estado'], ['En preparación', 'Listo', 'Servido'])) {
+                // Cuando ya está en cocina / listo / servido
+                $mesa->estado = 'Ocupada';
+            } elseif ($validated['estado'] === 'Pagado') {
+                // Cuando ya se pagó (Caja)
+                $mesa->estado = 'Disponible';
+            } elseif ($validated['estado'] === 'Pendiente') {
+                // Si quieres, puede seguir como Disponible mientras solo está tomando el pedido
+                $mesa->estado = 'Disponible';
+            }
+
+            $mesa->save();
+        }
+    }
+
+    $pedido->update($validated);
+
+    return response()->json([
+        'message' => 'Pedido actualizado correctamente',
+        'pedido'  => $pedido
+    ]);
+}
+
+
+    // ✔ ELIMINAR PEDIDO
     public function destroy($id)
     {
-        $pedido = Pedido::find($id);
+        $pedido = Pedido::findOrFail($id);
 
-        if (!$pedido) {
-            return response()->json(['message' => 'Pedido no encontrado'], 404);
-        }
+        // Liberar mesa
+        $mesa = Mesa::find($pedido->id_mesa);
+        $mesa->estado = 'Disponible';
+        $mesa->save();
 
-        try {
-            $pedido->delete(); // ON DELETE CASCADE elimina los detalles automáticamente
-            return response()->json(['message' => '🗑️ Pedido eliminado correctamente']);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => '❌ Error al eliminar pedido',
-                'detalle' => $e->getMessage()
-            ], 500);
-        }
+        // Eliminar pedido
+        $pedido->delete();
+
+        return response()->json(['message' => 'Pedido eliminado correctamente']);
     }
+
+    // 👨‍🍳 Pedidos para cocina: Pendientes o En preparación
+public function pedidosCocina()
+{
+    $pedidos = Pedido::with([
+            'mesa',
+            'empleado',
+            'detalles.platillo'
+        ])
+        ->whereIn('estado', ['Pendiente', 'En preparación'])
+        // ✅ Solo pedidos que tengan al menos un detalle
+        ->whereHas('detalles')
+        ->orderBy('fecha_pedido', 'asc')
+        ->get();
+
+    return response()->json($pedidos);
+}
+
 }

@@ -11,6 +11,9 @@ class Mesa extends Model
 
     protected $table = 'mesas';
 
+    // 👇 ESTA LÍNEA ES CLAVE
+    protected $primaryKey = 'id_mesa';
+
     protected $fillable = [
         'id_sucursal',
         'numero_mesa',
@@ -18,6 +21,5 @@ class Mesa extends Model
         'estado'
     ];
 
-    // 🚫 Desactivar timestamps automáticos
     public $timestamps = false;
 }
