@@ -186,4 +186,21 @@ public function pedidosCocina()
     return response()->json($pedidos);
 }
 
+
+public function pedidosParaCaja()
+{
+    // Pedidos que ya pasaron por cocina y están listos para cobrar
+    $pedidos = Pedido::with([
+            'mesa',
+            'empleado',
+            'detalles.platillo'
+        ])
+        ->where('estado', 'Listo')
+        ->whereHas('detalles') // solo con cosas pedidas
+        ->orderBy('fecha_pedido', 'asc')
+        ->get();
+
+    return response()->json($pedidos);
+}
+
 }

@@ -53,10 +53,14 @@ Route::prefix('v1')->group(function () {
     Route::get('/pedidos-cocina', [PedidoController::class, 'pedidosCocina']);
 
 
-      // Facturas
+    //  Pedidos listos para caja
+    Route::get('/pedidos-caja', [PedidoController::class, 'pedidosParaCaja']);
+
+    //  Facturas (caja)
     Route::get('/facturas', [FacturaController::class, 'index']);
     Route::get('/facturas/{id}', [FacturaController::class, 'show']);
-    Route::post('/facturas', [FacturaController::class, 'store']); // generar factura
-    Route::put('/facturas/{id}/anular', [FacturaController::class, 'anular']);
+    Route::post('/facturas', [FacturaController::class, 'store']);
 
+    
+    
 });

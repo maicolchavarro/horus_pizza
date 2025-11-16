@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Factura extends Model
 {
     protected $table = 'facturas';
+    protected $primaryKey = 'id_factura';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_pedido',
@@ -16,19 +18,17 @@ class Factura extends Model
         'impuesto',
         'total',
         'metodo_pago',
-        'estado'
+        'estado',
+        'estado_pago'
     ];
 
-    public $timestamps = false;
-
-    // Relaciones
     public function pedido()
     {
-        return $this->belongsTo(Pedido::class, 'id_pedido');
+        return $this->belongsTo(Pedido::class, 'id_pedido', 'id_pedido');
     }
 
     public function detalles()
     {
-        return $this->hasMany(DetalleFactura::class, 'id_factura');
+        return $this->hasMany(DetalleFactura::class, 'id_factura', 'id_factura');
     }
 }

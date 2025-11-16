@@ -31,20 +31,23 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       // Guardar información en localStorage
       localStorage.setItem('empleado', JSON.stringify(data.empleado));
 
-      // Obtener el rol del empleado
-      const rol = data.empleado.nombre_rol.toLowerCase();
 
-      // Redirección según el rol
-      if (rol === 'mesero') {
-        window.location.href = './mesas.html';
-      } else if (rol === 'cocinero') {
-        window.location.href = './cocina.html';
-      } else if (rol === 'administrador') {
-        window.location.href = './admin.html';
-      } else {
-        mensaje.textContent = 'Rol desconocido. Contacta al administrador.';
-        mensaje.style.color = 'red';
-      }
+    // Obtener el rol del empleado
+const rol = data.empleado.nombre_rol.toLowerCase();
+
+// Redirección según el rol
+if (rol === 'mesero') {
+  window.location.href = './mesas.html';
+} else if (rol === 'cocinero') {
+  window.location.href = './cocina.html';
+} else if (rol === 'cajero') {
+  window.location.href = './caja.html';
+} else if (rol === 'administrador') {
+  window.location.href = './admin.html';
+} else {
+  mensaje.textContent = 'Rol desconocido. Contacta al administrador.';
+  mensaje.style.color = 'red';
+}
 
     } else {
       mensaje.textContent = data.message || 'Credenciales incorrectas ❌';

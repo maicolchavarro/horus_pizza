@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caja | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/caja.css">
+</head>
+<body>
+  <header class="top-bar">
+    <h1>Caja - Horus Pizza</h1>
+    <button id="logoutBtn" class="btn-salir">Cerrar sesión</button>
+  </header>
+
+  <main class="layout">
+    <!-- Columna izquierda: pedidos listos -->
+    <section class="panel-izq">
+      <h2>Pedidos listos</h2>
+      <ul id="listaPedidosCaja" class="lista-pedidos"></ul>
+    </section>
+
+    <!-- Columna derecha: detalle + pago -->
+    <section class="panel-der">
+      <h2>Detalle del pedido</h2>
+
+      <div id="infoPedido" class="info-pedido">
+        <p>Selecciona un pedido para ver el detalle.</p>
+      </div>
+
+      <table class="tabla-detalle">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+            <th>Subt.</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyDetalle"></tbody>
+      </table>
+
+      <div class="totales">
+        <div>Subtotal: $<span id="subTotal">0</span></div>
+        <div>Impuesto: $<span id="impuesto">0</span></div>
+        <div class="total-final">Total: $<span id="total">0</span></div>
+      </div>
+
+      <button id="btnRealizarPago" class="btn-facturar" disabled>
+        Realizar pago
+      </button>
+    </section>
+  </main>
+
+  <footer class="footer-info">
+    <small>Solo se muestran pedidos en estado "Listo". Se actualiza cada 10 segundos.</small>
+  </footer>
+
+  <!-- MODAL DE PAGO -->
+  <div id="modalPago" class="modal oculto">
+    <div class="modal-contenido">
+      <h3>Confirmar pago</h3>
+      <p>Total a pagar: $<span id="modalTotal">0</span></p>
+
+      <div class="pago-modal">
+        <label for="metodoPagoModal">Método de pago:</label>
+        <select id="metodoPagoModal">
+          <option value="Efectivo">Efectivo</option>
+          <option value="Tarjeta">Tarjeta</option>
+          <option value="Transferencia">Transferencia</option>
+          <option value="Mixto">Mixto</option>
+        </select>
+      </div>
+
+      <div class="modal-botones">
+        <button id="btnCancelarPago" class="btn-secundario">Cancelar</button>
+        <button id="btnConfirmarPago" class="btn-primario">Pago realizado</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/caja.js"></script>
+</body>
+</html>

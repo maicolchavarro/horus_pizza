@@ -11,52 +11,71 @@ use Illuminate\Http\Request;
 
 class FacturaController extends Controller
 {
-    // 🔹 Listar todas las facturas
+    // Listar facturas (por si las necesitas)
     public function index()
     {
-        return Factura::with('detalles')->orderBy('id_factura', 'desc')->get();
+        return Factura::with(['pedido.mesa', 'detalles'])
+            ->orderBy('id_factura', 'desc')
+            ->get();
     }
 
-    // 🔹 Ver una factura
+    // Ver una factura específica
     public function show($id)
     {
-        return Factura::with('detalles')->findOrFail($id);
+        $factura = Factura::with(['pedido.mesa', 'detalles'])
+            ->findOrFail($id);
+
+        return response()->json($factura);
     }
 
-    // 🔹 Crear factura desde un pedido
+    // Crear factura desde un pedido (pago realizado en caja)
     public function store(Request $request)
     {
         $request->validate([
             'id_pedido'   => 'required|exists:pedidos,id_pedido',
-            'metodo_pago' => 'required|in:Efectivo,Tarjeta,Transferencia,Mixto'
+            'metodo_pago' => 'required|in:Efectivo,Tarjeta,Transferencia,Mixto',
         ]);
 
-        $pedido = Pedido::with('detalles.platillo')->findOrFail($request->id_pedido);
+        $pedido = Pedido::with('detalles.platillo', 'mesa')->findOrFail($request->id_pedido);
 
-        if ($pedido->estado !== 'Listo') {
-            return response()->json(['message' => 'El pedido no está listo para facturar'], 400);
+        // Pedido debe estar listo o servido
+        if (!in_array($pedido->estado, ['Listo', 'Servido'])) {
+            return response()->json([
+                'message' => 'El pedido debe estar "Listo" o "Servido" para facturar'
+            ], 400);
         }
 
-        // ----- Generar número de factura -----
-        $numero = 'FAC-' . str_pad(Factura::count() + 1, 6, '0', STR_PAD_LEFT);
+        // Evitar facturar dos veces el mismo pedido
+        if (Factura::where('id_pedido', $pedido->id_pedido)->exists()) {
+            return response()->json([
+                'message' => 'Este pedido ya tiene una factura generada'
+            ], 400);
+        }
 
-        // Calcular totales
+        // Calcular totales desde detalle_pedido
         $subtotal = $pedido->detalles->sum('subtotal');
-        $impuesto = $subtotal * 0.19; // IVA 19% opcional
+        $tasaIva = 0.00; // 0.19 si quieres activar IVA
+        $impuesto = $subtotal * $tasaIva;
         $total = $subtotal + $impuesto;
+
+        // Generar número de factura simple
+        $consecutivo = Factura::count() + 1;
+        $numero = 'FAC-' . str_pad($consecutivo, 6, '0', STR_PAD_LEFT);
 
         // Crear factura
         $factura = Factura::create([
             'id_pedido'      => $pedido->id_pedido,
             'numero_factura' => $numero,
+            'id_cliente'     => null,
             'subtotal'       => $subtotal,
             'impuesto'       => $impuesto,
             'total'          => $total,
             'metodo_pago'    => $request->metodo_pago,
             'estado'         => 'Emitida',
+            'estado_pago'    => 'Pagado',
         ]);
 
-        // Crear detalle_factura copiando de detalle_pedido
+        // Crear detalle_factura a partir de detalle_pedido
         foreach ($pedido->detalles as $item) {
             DetalleFactura::create([
                 'id_factura'      => $factura->id_factura,
@@ -64,31 +83,22 @@ class FacturaController extends Controller
                 'nombre_platillo' => $item->platillo->nombre,
                 'cantidad'        => $item->cantidad,
                 'precio_unitario' => $item->precio_unitario,
-                'subtotal'        => $item->subtotal
+                'subtotal'        => $item->subtotal,
             ]);
         }
 
-        // Cambiar estado del pedido a Pagado
+        // Actualizar pedido y liberar mesa
         $pedido->estado = 'Pagado';
         $pedido->save();
 
-        // Liberar mesa a Disponible
-        Mesa::where('id_mesa', $pedido->id_mesa)->update(['estado' => 'Disponible']);
+        if ($pedido->mesa) {
+            $pedido->mesa->estado = 'Disponible';
+            $pedido->mesa->save();
+        }
 
         return response()->json([
-            'message' => 'Factura creada correctamente',
+            'message' => 'Factura creada y pago registrado correctamente',
             'factura' => $factura
-        ]);
-    }
-
-    // 🔹 Anular factura
-    public function anular($id)
-    {
-        $factura = Factura::findOrFail($id);
-
-        $factura->estado = 'Anulada';
-        $factura->save();
-
-        return response()->json(['message' => 'Factura anulada']);
+        ], 201);
     }
 }

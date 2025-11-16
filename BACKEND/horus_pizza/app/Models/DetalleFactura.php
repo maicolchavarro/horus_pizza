@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class DetalleFactura extends Model
 {
     protected $table = 'detalle_factura';
+    protected $primaryKey = 'id_detalle_factura';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_factura',
@@ -17,15 +19,13 @@ class DetalleFactura extends Model
         'subtotal'
     ];
 
-    public $timestamps = false;
-
     public function factura()
     {
-        return $this->belongsTo(Factura::class, 'id_factura');
+        return $this->belongsTo(Factura::class, 'id_factura', 'id_factura');
     }
 
     public function platillo()
     {
-        return $this->belongsTo(Menu::class, 'id_platillo');
+        return $this->belongsTo(Menu::class, 'id_platillo', 'id_platillo');
     }
 }
