@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="admin-header">
+    <div class="brand">
+      <span class="brand-logo">🍕</span>
+      <div class="brand-text">
+        <h1>Horus Pizza - Administrador</h1>
+        <span id="adminNombre" class="subtitle">Bienvenido,</span>
+      </div>
+    </div>
+
+    <!-- NAV SUPERIOR -->
+    <nav class="admin-nav">
+      <button class="nav-item nav-item--active" id="navResumen">📊 Resumen</button>
+      <button class="nav-item" id="navReportes">📈 Reportes de Ventas</button>
+      <button class="nav-item" id="navMesas">🪑 Gestión de Mesas</button>
+      <button class="nav-item" id="navMenu">📜 Gestión de Menú</button>
+      <button class="nav-item" id="navCategorias">🏷️ Gestión de Categorías</button>
+      <button class="nav-item" id="navEmpleados">👥 Gestión de Empleados</button>
+    </nav>
+
+    <button id="logoutBtn" class="btn-logout">Cerrar sesión</button>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="admin-main">
+
+    <!-- RESUMEN GENERAL -->
+    <section class="section-resumen">
+      <h2>Resumen General</h2>
+
+      <div class="cards-row">
+        <!-- Ventas del día -->
+        <article class="card card-highlight">
+          <div class="card-icon">💰</div>
+          <div class="card-body">
+            <span class="card-title">VENTAS DEL DÍA</span>
+            <span class="card-value" id="cardVentasDia">$0</span>
+            <span class="card-subtext" id="cardVentasComparacion">Sin datos</span>
+          </div>
+        </article>
+
+        <!-- Pedidos activos -->
+        <article class="card">
+          <div class="card-icon">📦</div>
+          <div class="card-body">
+            <span class="card-title">PEDIDOS ACTIVOS</span>
+            <span class="card-value" id="cardPedidosDia">0</span>
+            <span class="card-subtext">En preparación / listos</span>
+          </div>
+        </article>
+
+        <!-- Producto más vendido (placeholder por ahora) -->
+        <article class="card">
+          <div class="card-icon">🍕</div>
+          <div class="card-body">
+            <span class="card-title">PRODUCTO MÁS VENDIDO</span>
+            <span class="card-value" id="cardProductoMasVendido">-</span>
+            <span class="card-subtext">Hoy</span>
+          </div>
+        </article>
+
+        <!-- Estado general de mesas -->
+        <article class="card">
+          <div class="card-icon">🏪</div>
+          <div class="card-body">
+            <span class="card-title">SUCURSAL LÍDER</span>
+            <span class="card-value" id="cardSucursalLider">-</span>
+            <span class="card-subtext" id="cardMesasResumen">
+              0 ocupadas · 0 libres · 0 reservadas
+            </span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEGUNDA FILA DE CARDS (FACTURAS / MESAS) -->
+    <section class="section-resumen">
+      <div class="cards-row cards-row--secondary">
+        <!-- Facturas del día -->
+        <article class="card">
+          <div class="card-icon">🧾</div>
+          <div class="card-body">
+            <span class="card-title">FACTURAS DEL DÍA</span>
+            <span class="card-value" id="cardFacturasDia">0</span>
+            <span class="card-subtext">Emitidas y pagadas hoy</span>
+          </div>
+        </article>
+
+        <!-- Mesas ocupadas -->
+        <article class="card mini-card">
+          <div class="card-icon">🍽️</div>
+          <div class="card-body">
+            <span class="card-title">MESAS OCUPADAS</span>
+            <span class="card-value" id="cardMesasOcupadas">0</span>
+          </div>
+        </article>
+
+        <!-- Mesas disponibles -->
+        <article class="card mini-card">
+          <div class="card-icon">✅</div>
+          <div class="card-body">
+            <span class="card-title">MESAS LIBRES</span>
+            <span class="card-value" id="cardMesasDisponibles">0</span>
+          </div>
+        </article>
+
+        <!-- Mesas reservadas -->
+        <article class="card mini-card">
+          <div class="card-icon">📌</div>
+          <div class="card-body">
+            <span class="card-title">RESERVADAS</span>
+            <span class="card-value" id="cardMesasReservadas">0</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ACCIONES RÁPIDAS -->
+    <section class="section-acciones">
+      <h2>Acciones Rápidas</h2>
+
+      <div class="acciones-grid">
+        <button class="accion-card" id="btnVerReportes">
+          <div class="accion-icon">📊</div>
+          <div class="accion-text">
+            <span class="accion-title">Ver Reportes Detallados</span>
+            <span class="accion-subtitle">Facturas, filtros, estadísticas</span>
+          </div>
+        </button>
+
+        <button class="accion-card" id="btnVerCocina">
+          <div class="accion-icon">👨‍🍳</div>
+          <div class="accion-text">
+            <span class="accion-title">Ver Cocina</span>
+            <span class="accion-subtitle">Pedidos en preparación</span>
+          </div>
+        </button>
+
+        <button class="accion-card" id="btnVerCaja">
+          <div class="accion-icon">💵</div>
+          <div class="accion-text">
+            <span class="accion-title">Ver Caja</span>
+            <span class="accion-subtitle">Cobros, facturas, pagos</span>
+          </div>
+        </button>
+
+        <button class="accion-card" id="btnEstadoMesas">
+          <div class="accion-icon">🍽️</div>
+          <div class="accion-text">
+            <span class="accion-title">Estado de Mesas</span>
+            <span class="accion-subtitle">Ver ocupadas / libres</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../js/admin.js"></script>
+</body>
+</html>

@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Login extends Model
 {
-    use HasFactory;
-
-    protected $table = 'Login';
+    protected $table = 'login';
     protected $primaryKey = 'id_login';
     public $timestamps = false;
 
@@ -22,6 +19,6 @@ class Login extends Model
 
     public function empleado()
     {
-        return $this->belongsTo(Empleado::class, 'id_empleado');
+        return $this->belongsTo(Empleado::class, 'id_empleado', 'id_empleado');
     }
 }

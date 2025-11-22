@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Empleado extends Model
 {
-    use HasFactory;
-
-    protected $table = 'Empleados';
+    protected $table = 'empleados';
     protected $primaryKey = 'id_empleado';
     public $timestamps = false;
 
@@ -22,6 +19,17 @@ class Empleado extends Model
         'telefono',
         'correo',
         'fecha_contratacion',
-        'salario'
+        'salario',
     ];
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal', 'id_sucursal');
+    }
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');
+    }
+    
 }

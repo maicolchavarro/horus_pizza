@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
+    // 🔹 Listar todos los platillos (con filtro opcional por categoría)
     public function index(Request $request)
     {
         $query = Menu::query();
@@ -19,6 +20,7 @@ class MenuController extends Controller
         return response()->json($query->get());
     }
 
+    // 🔹 Crear un platillo (con imagen opcional)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -27,8 +29,16 @@ class MenuController extends Controller
             'precio'             => 'required|numeric|min:0',
             'id_categoria'       => 'required|integer|exists:categorias,id_categoria',
             'tiempo_preparacion' => 'nullable|integer|min:0',
-            'imagen'             => 'nullable|string|max:255',
+            'imagen'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        // Manejo de imagen
+        if ($request->hasFile('imagen')) {
+            // Guarda en storage/app/public/platillos
+            $path = $request->file('imagen')->store('platillos', 'public');
+            // Guardamos la ruta relativa para usar con /storage
+            $validated['imagen'] = 'storage/' . $path;
+        }
 
         $platillo = Menu::create($validated);
 
@@ -38,6 +48,7 @@ class MenuController extends Controller
         ], 201);
     }
 
+    // 🔹 Mostrar un platillo
     public function show($id)
     {
         $platillo = Menu::findOrFail($id);
@@ -45,6 +56,7 @@ class MenuController extends Controller
         return response()->json($platillo);
     }
 
+    // 🔹 Actualizar un platillo (con opción de cambiar imagen)
     public function update(Request $request, $id)
     {
         $platillo = Menu::findOrFail($id);
@@ -55,8 +67,13 @@ class MenuController extends Controller
             'precio'             => 'sometimes|required|numeric|min:0',
             'id_categoria'       => 'sometimes|required|integer|exists:categorias,id_categoria',
             'tiempo_preparacion' => 'sometimes|nullable|integer|min:0',
-            'imagen'             => 'sometimes|nullable|string|max:255',
+            'imagen'             => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        if ($request->hasFile('imagen')) {
+            $path = $request->file('imagen')->store('platillos', 'public');
+            $validated['imagen'] = 'storage/' . $path;
+        }
 
         $platillo->update($validated);
 
@@ -66,6 +83,7 @@ class MenuController extends Controller
         ]);
     }
 
+    // 🔹 Eliminar un platillo
     public function destroy($id)
     {
         $platillo = Menu::findOrFail($id);

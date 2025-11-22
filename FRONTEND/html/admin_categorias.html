@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categorías | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/admin_categorias.css">
+</head>
+<body>
+  <header class="top-bar">
+    <h1>Gestión de categorías</h1>
+    <div class="top-actions">
+      <button id="btnVolver" class="btn-secundario">Volver al panel</button>
+      <button id="logoutBtn" class="btn-salir">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="layout-categorias-admin">
+    <!-- Lista de categorías -->
+    <section class="panel-lista">
+      <div class="panel-header">
+        <h2>Categorías actuales</h2>
+      </div>
+
+      <table class="tabla-categorias">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCategorias">
+          <tr><td colspan="3">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Formulario -->
+    <section class="panel-form">
+      <h2 id="formTitulo">Crear categoría</h2>
+
+      <form id="formCategoria">
+        <input type="hidden" id="categoriaId" name="categoriaId">
+
+        <div class="campo">
+          <label for="nombre_categoria">Nombre categoría:</label>
+          <input type="text" id="nombre_categoria" name="nombre_categoria" required maxlength="50">
+        </div>
+
+        <div class="acciones-form">
+          <button type="submit" class="btn-primario">Guardar</button>
+          <button type="button" id="btnNuevo" class="btn-secundario">Nuevo</button>
+        </div>
+
+        <p id="mensajeError" class="mensaje-error"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer-info">
+    <small>Administrador de categorías - Horus Pizza.</small>
+  </footer>
+
+  <script src="../js/admin_categorias.js"></script>
+</body>
+</html>

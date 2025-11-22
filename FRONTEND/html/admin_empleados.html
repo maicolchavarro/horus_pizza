@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de empleados | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/admin_empleados.css">
+</head>
+<body>
+  <header class="top-bar">
+    <h1>Gestión de empleados</h1>
+    <div class="top-actions">
+      <button id="btnVolver" class="btn-secundario">Volver al panel</button>
+      <button id="logoutBtn" class="btn-salir">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="layout-empleados-admin">
+    <!-- Lista de empleados -->
+    <section class="panel-lista">
+      <div class="panel-header">
+        <h2>Empleados actuales</h2>
+        <div class="filtros">
+          <label for="filtroSucursal">Sucursal:</label>
+          <select id="filtroSucursal">
+            <option value="">Todas</option>
+          </select>
+
+          <label for="filtroRol">Rol:</label>
+          <select id="filtroRol">
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+
+      <table class="tabla-empleados">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre completo</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Sucursal</th>
+            <th>Rol</th>
+            <th>Salario</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyEmpleados">
+          <tr><td colspan="9">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Formulario -->
+    <section class="panel-form">
+      <h2 id="formTitulo">Crear empleado</h2>
+
+      <form id="formEmpleado">
+        <input type="hidden" id="empleadoId" name="empleadoId">
+
+        <div class="campo">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" required maxlength="100">
+        </div>
+
+        <div class="campo">
+          <label for="apellido">Apellido:</label>
+          <input type="text" id="apellido" name="apellido" required maxlength="100">
+        </div>
+
+        <div class="campo">
+          <label for="dni">DNI:</label>
+          <input type="text" id="dni" name="dni" required maxlength="15">
+        </div>
+
+        <div class="campo">
+          <label for="telefono">Teléfono:</label>
+          <input type="text" id="telefono" name="telefono" maxlength="15">
+        </div>
+
+        <div class="campo">
+          <label for="correo">Correo:</label>
+          <input type="email" id="correo" name="correo" maxlength="100">
+        </div>
+
+        <div class="campo">
+          <label for="id_sucursal">Sucursal:</label>
+          <select id="id_sucursal" name="id_sucursal" required></select>
+        </div>
+
+        <div class="campo">
+          <label for="id_rol">Rol:</label>
+          <select id="id_rol" name="id_rol" required></select>
+        </div>
+
+        <div class="campo">
+          <label for="fecha_contratacion">Fecha contratación:</label>
+          <input type="date" id="fecha_contratacion" name="fecha_contratacion" required>
+        </div>
+
+        <div class="campo">
+          <label for="salario">Salario:</label>
+          <input type="number" id="salario" name="salario" min="0" required>
+        </div>
+
+        <div class="acciones-form">
+          <button type="submit" class="btn-primario">Guardar</button>
+          <button type="button" id="btnNuevo" class="btn-secundario">Nuevo</button>
+        </div>
+
+        <p id="mensajeError" class="mensaje-error"></p>
+      </form>
+    </section>
+  </main>
+
+
+  <!-- MODAL USUARIO EMPLEADO -->
+  <div id="modalUsuario" class="modal oculto">
+    <div class="modal-contenido">
+      <h3 id="modalUsuarioTitulo">Usuario de empleado</h3>
+      <p id="modalUsuarioInfo" class="modal-info"></p>
+
+      <form id="formUsuarioEmpleado">
+        <div class="campo">
+          <label for="usuarioEmpleado">Usuario:</label>
+          <input type="text" id="usuarioEmpleado" name="usuarioEmpleado" required maxlength="50">
+        </div>
+
+        <div class="campo">
+          <label for="passwordEmpleado">Contraseña:</label>
+          <input type="password" id="passwordEmpleado" name="passwordEmpleado" placeholder="(dejar vacío para no cambiar)">
+        </div>
+
+        <p id="mensajeErrorUsuario" class="mensaje-error"></p>
+
+        <div class="acciones-modal">
+          <button type="button" id="btnCerrarModalUsuario" class="btn-secundario">Cerrar</button>
+          <button type="button" id="btnEliminarUsuario" class="btn-accion" style="background:#c0392b; display:none;">
+            Eliminar usuario
+          </button>
+          <button type="submit" id="btnGuardarUsuario" class="btn-primario">
+            Guardar usuario
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+
+  <footer class="footer-info">
+    <small>Administrador de empleados - Horus Pizza.</small>
+  </footer>
+
+  <script src="../js/admin_empleados.js"></script>
+</body>
+</html>

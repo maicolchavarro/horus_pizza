@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas del día | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <header class="admin-header">
+    <div class="brand">
+      <span class="brand-logo">🍕</span>
+      <div class="brand-text">
+        <h1>Horus Pizza - Administrador</h1>
+        <span id="adminBienvenida" class="subtitle">Bienvenido, </span>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+      <button class="nav-item" id="navResumen">📊 Resumen</button>
+      <button class="nav-item nav-item--active" id="navReportes">📈 Reportes de Ventas</button>
+      <button class="nav-item" id="navMesas">🪑 Gestión de Mesas</button>
+      <button class="nav-item" id="navMenu">📜 Gestión de Menú</button>
+      <button class="nav-item" id="navEmpleados">👥 Gestión de Empleados</button>
+      <button class="nav-item" id="navCategorias">🏷️ Gestión de Categorías</button>
+    </nav>
+
+    <button id="logoutBtn" class="btn-logout">Cerrar sesión</button>
+  </header>
+
+  <main class="admin-main">
+    <section class="section-resumen">
+      <h2>Ventas del día</h2>
+      <p class="section-text">
+        Aquí puedes ver el total vendido hoy y las facturas generadas en la jornada.
+      </p>
+
+      <!-- Cards con resumen del día -->
+      <div class="cards-row" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <article class="card card-highlight">
+          <div class="card-icon">💰</div>
+          <div class="card-body">
+            <span class="card-title">TOTAL VENDIDO HOY</span>
+            <span class="card-value" id="ventasDiaTotal">$0</span>
+            <span class="card-subtext" id="ventasDiaTexto">Incluye todas las facturas de hoy</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🧾</div>
+          <div class="card-body">
+            <span class="card-title">FACTURAS DEL DÍA</span>
+            <span class="card-value" id="facturasDiaTotal">0</span>
+            <span class="card-subtext">Cantidad de facturas emitidas hoy</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Tabla con facturas de hoy -->
+    <section class="section-facturas">
+      <div class="section-header">
+        <h3>Facturas de hoy</h3>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="tabla-facturas">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Fecha</th>
+              <th>Mesa</th>
+              <th>Método</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyFacturas">
+            <tr><td colspan="5">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/admin_reportes.js"></script>
+</body>
+</html>

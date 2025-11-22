@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de platillos | Horus Pizza</title>
+  <link rel="stylesheet" href="../css/admin_menu.css">
+</head>
+<body>
+  <header class="top-bar">
+    <h1>Gestión de platillos</h1>
+    <div class="top-actions">
+      <button id="btnVolver" class="btn-secundario">Volver al panel</button>
+      <button id="logoutBtn" class="btn-salir">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="layout-menu-admin">
+    <!-- Lista de platillos -->
+    <section class="panel-lista">
+      <div class="panel-header">
+        <h2>Platillos actuales</h2>
+      </div>
+
+      <table class="tabla-platillos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Prep. (min)</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPlatillos">
+          <tr><td colspan="7">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Formulario de creación/edición -->
+    <section class="panel-form">
+      <h2 id="formTitulo">Crear platillo</h2>
+
+      <form id="formPlatillo" enctype="multipart/form-data">
+        <input type="hidden" id="platilloId" name="platilloId">
+
+        <div class="campo">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" required>
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción:</label>
+          <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="precio">Precio:</label>
+          <input type="number" id="precio" name="precio" min="0" required>
+        </div>
+
+        <div class="campo">
+          <label for="id_categoria">Categoría:</label>
+          <select id="id_categoria" name="id_categoria" required></select>
+        </div>
+
+        <div class="campo">
+          <label for="tiempo_preparacion">Tiempo preparación (min):</label>
+          <input type="number" id="tiempo_preparacion" name="tiempo_preparacion" min="0">
+        </div>
+
+        <div class="campo">
+          <label for="imagen">Imagen:</label>
+          <input type="file" id="imagen" name="imagen" accept="image/*">
+          <div class="preview">
+            <img id="previewImg" src="" alt="Vista previa" style="display:none;">
+          </div>
+        </div>
+
+        <div class="acciones-form">
+          <button type="submit" class="btn-primario">Guardar</button>
+          <button type="button" id="btnNuevo" class="btn-secundario">Nuevo</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer-info">
+    <small>Administrador de menú - Horus Pizza.</small>
+  </footer>
+
+  <script src="../js/admin_menu.js"></script>
+</body>
+</html>

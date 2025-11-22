@@ -136,4 +136,6 @@ DELETE http://127.0.0.1:8000/api/v1/detalles/9
 GET http://127.0.0.1:8000/api/v1/pedidos/6/detalle-completo
 
 
+### resuemnn de ventas administrador
+GET http://127.0.0.1:8000/api/v1/admin/resumen
 
