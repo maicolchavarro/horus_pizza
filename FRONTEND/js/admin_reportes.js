@@ -3,16 +3,19 @@ const API_URL = 'http://127.0.0.1:8000/api/v1';
 
 let empleado = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+function authHeaders() {
+  const token = sessionStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
-  // Si no hay login
+document.addEventListener('DOMContentLoaded', () => {
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
+
   if (!empleado) {
     window.location.href = './login.html';
     return;
   }
 
-  // Solo administrador
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'administrador') {
     alert('No tienes permiso para ver esta pantalla.');
@@ -20,25 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Bienvenida
   const bienvenida = document.getElementById('adminBienvenida');
   if (bienvenida) {
     bienvenida.textContent = `Bienvenido, ${empleado.nombre} ${empleado.apellido}`;
   }
 
-  // Logout
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
-  // NAV superior
   document.getElementById('navResumen').addEventListener('click', () => {
     window.location.href = './admin.html';
   });
-  document.getElementById('navReportes').addEventListener('click', () => {
-    // ya estás aquí
-  });
+  document.getElementById('navReportes').addEventListener('click', () => {});
   document.getElementById('navMesas').addEventListener('click', () => {
     window.location.href = './admin_mesas.html';
   });
@@ -52,16 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = './admin_categorias.html';
   });
 
-  // Cargar ventas del día al inicio
   cargarVentasDia();
-
-  // Opcional: refrescar cada 30s
   setInterval(cargarVentasDia, 30000);
 });
 
 async function cargarVentasDia() {
   try {
-    const res = await fetch(`${API_URL}/admin/resumen`);
+    const res = await fetch(`${API_URL}/admin/resumen`, { headers: { ...authHeaders() } });
     if (!res.ok) {
       console.error('No se pudo obtener el resumen de admin');
       return;
@@ -75,23 +70,18 @@ async function cargarVentasDia() {
 }
 
 function renderVentasDia(data) {
-  // 1) Total vendido hoy
   const totalHoy = Number(data.ventas_dia ?? 0);
   const ventasEl = document.getElementById('ventasDiaTotal');
   if (ventasEl) {
     ventasEl.textContent = '$' + totalHoy.toLocaleString();
   }
 
-  // 2) Facturas del día (cantidad)
-  // Si el backend ya manda facturas_dia, lo usamos; si no, lo calculamos filtrando
   let facturasHoy = [];
-
-  const hoyStr = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  const hoyStr = new Date().toISOString().slice(0, 10);
   const ultimas = data.ultimas_facturas || [];
 
   facturasHoy = ultimas.filter(f => {
     if (!f.fecha_emision) return false;
-    // fecha_emision viene como "2025-11-16 20:16:36"
     const soloFecha = String(f.fecha_emision).split(' ')[0];
     return soloFecha === hoyStr;
   });
@@ -102,7 +92,6 @@ function renderVentasDia(data) {
     facturasEl.textContent = Number(cantidadHoy).toString();
   }
 
-  // 3) Pintar tabla con las facturas de hoy filtradas
   const tbody = document.getElementById('tbodyFacturas');
   if (!tbody) return;
 

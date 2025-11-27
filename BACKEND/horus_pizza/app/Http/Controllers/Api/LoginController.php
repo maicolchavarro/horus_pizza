@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Login;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -25,8 +26,9 @@ class LoginController extends Controller
             ], 401);
         }
 
-        // Actualiza el último acceso
+        // Actualiza el último acceso y token
         $login->ultimo_acceso = now();
+        $login->api_token = Str::random(60);
         $login->save();
 
         // Cargar info del empleado asociado
@@ -39,6 +41,7 @@ class LoginController extends Controller
         return response()->json([
             'message' => 'Inicio de sesión exitoso',
             'empleado' => $empleado,
+            'token'    => $login->api_token,
         ], 200);
     }
 }

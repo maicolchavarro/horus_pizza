@@ -4,16 +4,21 @@ const API_URL = 'http://127.0.0.1:8000/api/v1';
 
 let empleado = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', Accept: 'application/json', ...base };
+  return { Accept: 'application/json', ...base };
+}
 
-  // Si no hay sesión, fuera
+document.addEventListener('DOMContentLoaded', () => {
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
+
   if (!empleado) {
     window.location.href = './login.html';
     return;
   }
 
-  // (Opcional) Asegurarnos que solo cocinero entra aquí
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'cocinero') {
     alert('No tienes permiso para ver esta pantalla.');
@@ -23,20 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const logoutBtn = document.getElementById('logoutBtn');
   logoutBtn.addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
-  // Cargar pedidos al inicio
   cargarPedidosCocina();
-
-  // Refrescar automáticamente cada 10 segundos
   setInterval(cargarPedidosCocina, 10000);
 });
 
 async function cargarPedidosCocina() {
   try {
-    const res = await fetch(`${API_URL}/pedidos-cocina`);
+    const res = await fetch(`${API_URL}/pedidos-cocina`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar los pedidos de cocina');
       return;
@@ -54,7 +56,7 @@ function renderPedidos(pedidos) {
   cont.innerHTML = '';
 
   if (!pedidos.length) {
-    cont.innerHTML = '<p>No hay pedidos pendientes 👌</p>';
+    cont.innerHTML = '<p>No hay pedidos pendientes</p>';
     return;
   }
 
@@ -116,7 +118,7 @@ async function actualizarEstadoPedido(idPedido, nuevoEstado) {
   try {
     const res = await fetch(`${API_URL}/pedidos/${idPedido}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(true),
       body: JSON.stringify({ estado: nuevoEstado })
     });
 
@@ -126,7 +128,6 @@ async function actualizarEstadoPedido(idPedido, nuevoEstado) {
       return;
     }
 
-    // Recargar lista
     cargarPedidosCocina();
   } catch (err) {
     console.error('Error actualizando estado del pedido:', err);

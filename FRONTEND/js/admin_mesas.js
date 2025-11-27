@@ -6,15 +6,21 @@ let sucursales = [];
 let mesas = [];
 let modoEdicion = false;
 
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', 'Accept': 'application/json', ...base };
+  return { 'Accept': 'application/json', ...base };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
 
   if (!empleado) {
     window.location.href = './login.html';
     return;
   }
 
-  // Validar rol administrador
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'administrador') {
     alert('No tienes permiso para ver esta pantalla.');
@@ -23,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
@@ -36,19 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('filtroSucursal').addEventListener('change', renderMesas);
 
-  // Cargar datos
   cargarSucursales().then(() => {
     cargarMesas();
   });
 });
 
-/* ==============================
-   SUCURSALES
-============================== */
-
 async function cargarSucursales() {
   try {
-    const res = await fetch(`${API_URL}/sucursales`);
+    const res = await fetch(`${API_URL}/sucursales`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar las sucursales');
       return;
@@ -56,7 +57,6 @@ async function cargarSucursales() {
 
     sucursales = await res.json();
 
-    // Llenar select del formulario
     const selectForm = document.getElementById('id_sucursal');
     selectForm.innerHTML = '';
     sucursales.forEach(s => {
@@ -66,7 +66,6 @@ async function cargarSucursales() {
       selectForm.appendChild(opt);
     });
 
-    // Llenar select del filtro
     const filtro = document.getElementById('filtroSucursal');
     filtro.innerHTML = '<option value="">Todas</option>';
     sucursales.forEach(s => {
@@ -81,13 +80,9 @@ async function cargarSucursales() {
   }
 }
 
-/* ==============================
-   MESAS
-============================== */
-
 async function cargarMesas() {
   try {
-    const res = await fetch(`${API_URL}/mesas`);
+    const res = await fetch(`${API_URL}/mesas`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar las mesas');
       return;
@@ -142,10 +137,6 @@ function renderMesas() {
   });
 }
 
-/* ==============================
-   FORMULARIO
-============================== */
-
 function cargarEnFormulario(m) {
   modoEdicion = true;
   document.getElementById('formTitulo').textContent = 'Editar mesa';
@@ -166,7 +157,6 @@ function resetFormulario() {
   document.getElementById('formMesa').reset();
   limpiarMensajeError();
 
-  // Si quieres que por defecto seleccione la primera sucursal:
   if (sucursales.length) {
     document.getElementById('id_sucursal').value = sucursales[0].id_sucursal;
   }
@@ -176,10 +166,6 @@ function limpiarMensajeError() {
   const msg = document.getElementById('mensajeError');
   msg.textContent = '';
 }
-
-/* ==============================
-   GUARDAR (CREAR / EDITAR)
-============================== */
 
 async function onSubmitForm(e) {
   e.preventDefault();
@@ -207,10 +193,7 @@ async function onSubmitForm(e) {
   try {
     const res = await fetch(url, {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers: authHeaders(true),
       body: JSON.stringify(payload),
     });
 
@@ -233,17 +216,13 @@ async function onSubmitForm(e) {
   }
 }
 
-/* ==============================
-   ELIMINAR
-============================== */
-
 async function eliminarMesa(id) {
   if (!confirm('¿Seguro que deseas eliminar esta mesa?')) return;
 
   try {
     const res = await fetch(`${API_URL}/mesas/${id}`, {
       method: 'DELETE',
-      headers: { 'Accept': 'application/json' },
+      headers: authHeaders(),
     });
 
     const data = await res.json();
@@ -266,10 +245,6 @@ async function eliminarMesa(id) {
     alert('Error al eliminar la mesa');
   }
 }
-
-/* ==============================
-   AYUDAS
-============================== */
 
 function mostrarError(texto) {
   const msg = document.getElementById('mensajeError');

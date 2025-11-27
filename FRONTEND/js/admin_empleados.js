@@ -7,26 +7,27 @@ let roles = [];
 let empleados = [];
 let modoEdicion = false;
 let empleadoSeleccionadoUsuario = null;
-let usuarioActualEmpleado = null; // para saber si ya existe o no
+let usuarioActualEmpleado = null;
 
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', 'Accept': 'application/json', ...base };
+  return { 'Accept': 'application/json', ...base };
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
 
-
-
-  // Modal usuario empleado
   document.getElementById('btnCerrarModalUsuario').addEventListener('click', cerrarModalUsuario);
   document.getElementById('formUsuarioEmpleado').addEventListener('submit', onSubmitUsuarioEmpleado);
   document.getElementById('btnEliminarUsuario').addEventListener('click', onEliminarUsuarioEmpleado);
-
 
   if (!empleado) {
     window.location.href = './login.html';
     return;
   }
 
-  // Validar rol administrador
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'administrador') {
     alert('No tienes permiso para ver esta pantalla.');
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
@@ -49,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('filtroSucursal').addEventListener('change', renderEmpleados);
   document.getElementById('filtroRol').addEventListener('change', renderEmpleados);
 
-  // Cargar datos base
   Promise.all([
     cargarSucursales(),
     cargarRoles()
@@ -58,13 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* ==============================
-   SUCURSALES
-============================== */
-
 async function cargarSucursales() {
   try {
-    const res = await fetch(`${API_URL}/sucursales`);
+    const res = await fetch(`${API_URL}/sucursales`, { headers: authHeaders() });
     if (!res.ok) return console.error('No se pudieron cargar las sucursales');
 
     sucursales = await res.json();
@@ -92,13 +88,9 @@ async function cargarSucursales() {
   }
 }
 
-/* ==============================
-   ROLES
-============================== */
-
 async function cargarRoles() {
   try {
-    const res = await fetch(`${API_URL}/roles`);
+    const res = await fetch(`${API_URL}/roles`, { headers: authHeaders() });
     if (!res.ok) return console.error('No se pudieron cargar los roles');
 
     roles = await res.json();
@@ -126,13 +118,9 @@ async function cargarRoles() {
   }
 }
 
-/* ==============================
-   EMPLEADOS
-============================== */
-
 async function cargarEmpleados() {
   try {
-    const res = await fetch(`${API_URL}/empleados`);
+    const res = await fetch(`${API_URL}/empleados`, { headers: authHeaders() });
     if (!res.ok) return console.error('No se pudieron cargar los empleados');
 
     empleados = await res.json();
@@ -181,14 +169,14 @@ function renderEmpleados() {
       <td>${nombreSucursal}</td>
       <td>${nombreRol}</td>
       <td>$${Number(emp.salario ?? 0).toLocaleString()}</td>
-           <td>
+      <td>
         <button class="btn-accion btn-edit">Editar</button>
         <button class="btn-accion btn-user" style="background:#8e44ad;">Usuario</button>
         <button class="btn-accion" style="background:#c0392b;">Eliminar</button>
       </td>
     `;
 
-       const btnEdit = tr.querySelector('.btn-edit');
+    const btnEdit = tr.querySelector('.btn-edit');
     const btnUser = tr.querySelector('.btn-user');
     const btnDel  = tr.querySelector('button[style*="c0392b"]');
 
@@ -196,14 +184,9 @@ function renderEmpleados() {
     btnDel.addEventListener('click', () => eliminarEmpleado(emp.id_empleado));
     btnUser.addEventListener('click', () => abrirModalUsuario(emp));
 
-
     tbody.appendChild(tr);
   });
 }
-
-/* ==============================
-   FORMULARIO
-============================== */
 
 function cargarEnFormulario(emp) {
   modoEdicion = true;
@@ -242,10 +225,6 @@ function limpiarMensajeError() {
   document.getElementById('mensajeError').textContent = '';
 }
 
-/* ==============================
-   GUARDAR (CREAR / EDITAR)
-============================== */
-
 async function onSubmitForm(e) {
   e.preventDefault();
   limpiarMensajeError();
@@ -269,19 +248,13 @@ async function onSubmitForm(e) {
     return;
   }
 
-  const url = id
-    ? `${API_URL}/empleados/${id}`
-    : `${API_URL}/empleados`;
-
+  const url = id ? `${API_URL}/empleados/${id}` : `${API_URL}/empleados`;
   const method = id ? 'PUT' : 'POST';
 
   try {
     const res = await fetch(url, {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers: authHeaders(true),
       body: JSON.stringify(payload),
     });
 
@@ -308,19 +281,13 @@ async function onSubmitForm(e) {
   }
 }
 
-/* ==============================
-   ELIMINAR
-============================== */
-
 async function eliminarEmpleado(id) {
   if (!confirm('¿Seguro que deseas eliminar este empleado?')) return;
 
   try {
     const res = await fetch(`${API_URL}/empleados/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: authHeaders(),
     });
 
     const data = await res.json();
@@ -344,17 +311,9 @@ async function eliminarEmpleado(id) {
   }
 }
 
-/* ==============================
-   AYUDAS
-============================== */
-
 function mostrarError(texto) {
   document.getElementById('mensajeError').textContent = texto;
 }
-
-/* ==============================
-   USUARIO POR EMPLEADO
-============================== */
 
 function abrirModalUsuario(emp) {
   empleadoSeleccionadoUsuario = emp;
@@ -376,15 +335,12 @@ function abrirModalUsuario(emp) {
 
   btnEliminar.style.display = 'none';
 
-  // Consultar si ya tiene usuario
-  fetch(`${API_URL}/empleados/${emp.id_empleado}/usuario`)
+  fetch(`${API_URL}/empleados/${emp.id_empleado}/usuario`, { headers: authHeaders() })
     .then(res => res.json())
     .then(data => {
-      // si es null, no tiene usuario
       if (data && data.usuario) {
-        usuarioActualEmpleado = data; // {id_login, id_empleado, usuario,...}
+        usuarioActualEmpleado = data;
         inputUsuario.value = data.usuario;
-        // no mostramos password por seguridad
         info.textContent = `Este empleado ya tiene usuario asignado. Puedes cambiar el nombre de usuario o resetear la contraseña.`;
         btnEliminar.style.display = 'inline-block';
       }
@@ -413,10 +369,6 @@ function mostrarErrorUsuario(msg) {
   document.getElementById('mensajeErrorUsuario').textContent = msg;
 }
 
-/* ==============================
-   GUARDAR USUARIO (CREAR / EDITAR)
-============================== */
-
 async function onSubmitUsuarioEmpleado(e) {
   e.preventDefault();
   limpiarErrorUsuario();
@@ -435,7 +387,6 @@ async function onSubmitUsuarioEmpleado(e) {
     return;
   }
 
-  // Si no existe usuario → creamos (password obligatorio)
   if (!usuarioActualEmpleado) {
     if (!password) {
       mostrarErrorUsuario('La contraseña es obligatoria al crear un usuario.');
@@ -445,10 +396,7 @@ async function onSubmitUsuarioEmpleado(e) {
     try {
       const res = await fetch(`${API_URL}/empleados/${empId}/usuario`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: authHeaders(true),
         body: JSON.stringify({ usuario, password }),
       });
 
@@ -476,19 +424,15 @@ async function onSubmitUsuarioEmpleado(e) {
     return;
   }
 
-  // Si ya existe usuario → actualizar
   const payload = { usuario };
   if (password) {
-    payload.password = password; // solo se actualiza si se envía
+    payload.password = password;
   }
 
   try {
     const res = await fetch(`${API_URL}/empleados/${empId}/usuario`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers: authHeaders(true),
       body: JSON.stringify(payload),
     });
 
@@ -514,10 +458,6 @@ async function onSubmitUsuarioEmpleado(e) {
   }
 }
 
-/* ==============================
-   ELIMINAR USUARIO
-============================== */
-
 async function onEliminarUsuarioEmpleado() {
   limpiarErrorUsuario();
 
@@ -538,7 +478,7 @@ async function onEliminarUsuarioEmpleado() {
   try {
     const res = await fetch(`${API_URL}/empleados/${empId}/usuario`, {
       method: 'DELETE',
-      headers: { 'Accept': 'application/json' },
+      headers: authHeaders(),
     });
 
     const data = await res.json();

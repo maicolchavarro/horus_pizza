@@ -6,22 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('logins', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('login', function (Blueprint $table) {
+            $table->string('api_token', 80)->nullable()->unique()->after('ultimo_acceso');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('logins');
+        Schema::table('login', function (Blueprint $table) {
+            $table->dropColumn('api_token');
+        });
     }
 };

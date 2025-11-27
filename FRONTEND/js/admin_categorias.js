@@ -5,15 +5,21 @@ let empleado = null;
 let categorias = [];
 let modoEdicion = false;
 
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', 'Accept': 'application/json', ...base };
+  return { 'Accept': 'application/json', ...base };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
 
   if (!empleado) {
     window.location.href = './login.html';
     return;
   }
 
-  // Validar rol administrador
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'administrador') {
     alert('No tienes permiso para ver esta pantalla.');
@@ -22,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
@@ -36,13 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarCategorias();
 });
 
-/* ==============================
-   CARGAR LISTA
-============================== */
-
 async function cargarCategorias() {
   try {
-    const res = await fetch(`${API_URL}/categorias`);
+    const res = await fetch(`${API_URL}/categorias`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar las categorías');
       return;
@@ -85,10 +87,6 @@ function renderCategorias() {
   });
 }
 
-/* ==============================
-   FORMULARIO
-============================== */
-
 function cargarEnFormulario(cat) {
   modoEdicion = true;
   document.getElementById('formTitulo').textContent = 'Editar categoría';
@@ -111,10 +109,6 @@ function limpiarMensajeError() {
   const msg = document.getElementById('mensajeError');
   msg.textContent = '';
 }
-
-/* ==============================
-   GUARDAR (CREAR / EDITAR)
-============================== */
 
 async function onSubmitForm(e) {
   e.preventDefault();
@@ -139,17 +133,13 @@ async function onSubmitForm(e) {
   try {
     const res = await fetch(url, {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers: authHeaders(true),
       body: JSON.stringify(payload),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      // Intentar mostrar mensajes de validación
       if (data.errors?.nombre_categoria) {
         mostrarError(data.errors.nombre_categoria.join(', '));
       } else {
@@ -169,19 +159,13 @@ async function onSubmitForm(e) {
   }
 }
 
-/* ==============================
-   ELIMINAR
-============================== */
-
 async function eliminarCategoria(id) {
   if (!confirm('¿Seguro que deseas eliminar esta categoría?')) return;
 
   try {
     const res = await fetch(`${API_URL}/categorias/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: authHeaders(),
     });
 
     const data = await res.json();
@@ -204,10 +188,6 @@ async function eliminarCategoria(id) {
     alert('Error al eliminar la categoría');
   }
 }
-
-/* ==============================
-   AYUDAS
-============================== */
 
 function mostrarError(texto) {
   const msg = document.getElementById('mensajeError');

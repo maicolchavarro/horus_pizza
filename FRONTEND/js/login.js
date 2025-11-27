@@ -1,3 +1,5 @@
+const API_URL = 'http://127.0.0.1:8000/api/v1';
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -5,7 +7,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value.trim();
   const mensaje = document.getElementById('mensaje');
 
-  // Validación básica
   if (!usuario || !password) {
     mensaje.textContent = 'Por favor, completa todos los campos.';
     mensaje.style.color = 'red';
@@ -13,7 +14,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   }
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/v1/login', {
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,35 +26,33 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await response.json();
 
     if (response.ok && data.empleado) {
-      mensaje.textContent = data.message || 'Inicio de sesión exitoso ✅';
+      mensaje.textContent = data.message || 'Inicio de sesión exitoso.';
       mensaje.style.color = 'green';
 
-      // Guardar información en localStorage
-      localStorage.setItem('empleado', JSON.stringify(data.empleado));
+      // Guardar en sessionStorage (token por sesión/navegador)
+      sessionStorage.setItem('empleado', JSON.stringify(data.empleado));
+      if (data.token) {
+        sessionStorage.setItem('token', data.token);
+      }
 
+      const rol = data.empleado.nombre_rol?.toLowerCase();
 
-    // Obtener el rol del empleado
-const rol = data.empleado.nombre_rol.toLowerCase();
-
-// Redirección según el rol
-if (rol === 'mesero') {
-  window.location.href = './mesas.html';
-} else if (rol === 'cocinero') {
-  window.location.href = './cocina.html';
-} else if (rol === 'cajero') {
-  window.location.href = './caja.html';
-} else if (rol === 'administrador') {
-  window.location.href = './admin.html';
-} else {
-  mensaje.textContent = 'Rol desconocido. Contacta al administrador.';
-  mensaje.style.color = 'red';
-}
-
+      if (rol === 'mesero') {
+        window.location.href = './mesas.html';
+      } else if (rol === 'cocinero') {
+        window.location.href = './cocina.html';
+      } else if (rol === 'cajero') {
+        window.location.href = './caja.html';
+      } else if (rol === 'administrador') {
+        window.location.href = './admin.html';
+      } else {
+        mensaje.textContent = 'Rol desconocido. Contacta al administrador.';
+        mensaje.style.color = 'red';
+      }
     } else {
-      mensaje.textContent = data.message || 'Credenciales incorrectas ❌';
+      mensaje.textContent = data.message || 'Credenciales incorrectas.';
       mensaje.style.color = 'red';
     }
-
   } catch (error) {
     mensaje.textContent = 'Error al conectar con el servidor.';
     mensaje.style.color = 'red';

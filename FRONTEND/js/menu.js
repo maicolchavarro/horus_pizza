@@ -6,9 +6,15 @@ let pedidoActual = null;
 let categorias = [];
 let categoriaActiva = null;
 
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', Accept: 'application/json', ...base };
+  return base;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // Pedido creado/obtenido en mesas.js
-  pedidoActual = JSON.parse(localStorage.getItem('pedido_actual'));
+  pedidoActual = JSON.parse(sessionStorage.getItem('pedido_actual'));
 
   if (!pedidoActual) {
     alert('No hay pedido seleccionado.');
@@ -25,14 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-/* =========================
-   CATEGORÍAS
-========================= */
-
 async function cargarCategorias() {
   const contTabs = document.getElementById('tabsCategorias');
 
-  const res = await fetch(`${API_URL}/categorias`);
+  const res = await fetch(`${API_URL}/categorias`, { headers: { Accept: 'application/json', ...authHeaders() } });
   if (!res.ok) {
     throw new Error('No se pudieron cargar las categorías');
   }
@@ -52,9 +54,7 @@ async function cargarCategorias() {
     }
 
     tab.addEventListener('click', () => {
-      document
-        .querySelectorAll('.tab-cat')
-        .forEach(el => el.classList.remove('activo'));
+      document.querySelectorAll('.tab-cat').forEach(el => el.classList.remove('activo'));
 
       tab.classList.add('activo');
       categoriaActiva = cat;
@@ -65,12 +65,8 @@ async function cargarCategorias() {
   });
 }
 
-/* =========================
-   PRODUCTOS POR CATEGORÍA
-========================= */
-
 async function cargarProductos(idCategoria) {
-  const res = await fetch(`${API_URL}/menu?id_categoria=${idCategoria}`);
+  const res = await fetch(`${API_URL}/menu?id_categoria=${idCategoria}`, { headers: authHeaders() });
   if (!res.ok) {
     console.error('Error al cargar productos de la categoría', idCategoria);
     return;
@@ -111,15 +107,11 @@ async function cargarProductos(idCategoria) {
   });
 }
 
-/* =========================
-   AGREGAR PRODUCTO
-========================= */
-
 async function agregarProducto(idPlatillo, btnElement) {
   try {
     const res = await fetch(`${API_URL}/detalles`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(true),
       body: JSON.stringify({
         id_pedido: pedidoActual.id_pedido,
         id_platillo: idPlatillo,
@@ -133,34 +125,28 @@ async function agregarProducto(idPlatillo, btnElement) {
       return;
     }
 
-    // Actualizar badge del carrito
     await cargarBadgeCarrito();
 
-    // Animar botón
     if (btnElement) {
       btnElement.classList.add('btn-added');
       setTimeout(() => btnElement.classList.remove('btn-added'), 180);
     }
 
-    // Animar carrito
     animarCarrito();
   } catch (err) {
     console.error('Error agregando producto', err);
   }
 }
 
-/* =========================
-   BADGE DEL CARRITO
-========================= */
-
 async function cargarBadgeCarrito() {
   try {
-    const res = await fetch(`${API_URL}/pedidos/${pedidoActual.id_pedido}/detalle-completo`);
+    const res = await fetch(`${API_URL}/pedidos/${pedidoActual.id_pedido}/detalle-completo`, {
+      headers: { Accept: 'application/json', ...authHeaders() }
+    });
     if (!res.ok) return;
 
     const pedido = await res.json();
-    const cantidadTotal =
-      pedido.detalles?.reduce((sum, d) => sum + d.cantidad, 0) || 0;
+    const cantidadTotal = pedido.detalles?.reduce((sum, d) => sum + d.cantidad, 0) || 0;
 
     const badge = document.getElementById('badgeCarrito');
     if (cantidadTotal > 0) {
@@ -174,19 +160,14 @@ async function cargarBadgeCarrito() {
   }
 }
 
-/* Animación carrito */
 function animarCarrito() {
   const cart = document.getElementById('cartIcon');
   if (!cart) return;
 
   cart.classList.remove('cart-bump');
-  void cart.offsetWidth; // reinicia la animación
+  void cart.offsetWidth;
   cart.classList.add('cart-bump');
 }
-
-/* =========================
-   NAVEGACIÓN
-========================= */
 
 function irMesas() {
   window.location.href = './mesas.html';

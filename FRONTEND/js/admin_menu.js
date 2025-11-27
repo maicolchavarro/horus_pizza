@@ -6,15 +6,21 @@ let categorias = [];
 let platillos = [];
 let modoEdicion = false;
 
+function authHeaders(form = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (form) return { Accept: 'application/json', ...base };
+  return { 'Content-Type': 'application/json', 'Accept': 'application/json', ...base };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
 
   if (!empleado) {
     window.location.href = './login.html';
     return;
   }
 
-  // Validar rol administrador
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'administrador') {
     alert('No tienes permiso para ver esta pantalla.');
@@ -23,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
@@ -34,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('formPlatillo').addEventListener('submit', onSubmitForm);
   document.getElementById('btnNuevo').addEventListener('click', resetFormulario);
 
-  // Preview imagen
   document.getElementById('imagen').addEventListener('change', (e) => {
     const file = e.target.files[0];
     const img = document.getElementById('previewImg');
@@ -51,18 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Cargar datos iniciales
   cargarCategorias();
   cargarPlatillos();
 });
 
-/* ==============================
-   CATEGORÍAS
-============================== */
-
 async function cargarCategorias() {
   try {
-    const res = await fetch(`${API_URL}/categorias`);
+    const res = await fetch(`${API_URL}/categorias`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar las categorías');
       return;
@@ -84,13 +84,9 @@ async function cargarCategorias() {
   }
 }
 
-/* ==============================
-   PLATILLOS
-============================== */
-
 async function cargarPlatillos() {
   try {
-    const res = await fetch(`${API_URL}/menu`);
+    const res = await fetch(`${API_URL}/menu`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar los platillos');
       return;
@@ -118,14 +114,11 @@ function renderPlatillos() {
     const categoria = categorias.find(c => c.id_categoria === p.id_categoria);
     const nombreCategoria = categoria ? categoria.nombre_categoria : p.id_categoria;
 
-    // Ajusta base URL si es necesario
     let imagenSrc = '';
     if (p.imagen) {
-      if (p.imagen.startsWith('http')) {
-        imagenSrc = p.imagen;
-      } else {
-        imagenSrc = `http://127.0.0.1:8000/${p.imagen}`;
-      }
+      imagenSrc = p.imagen.startsWith('http')
+        ? p.imagen
+        : `http://127.0.0.1:8000/${p.imagen}`;
     }
 
     tr.innerHTML = `
@@ -155,10 +148,6 @@ function renderPlatillos() {
   });
 }
 
-/* ==============================
-   FORMULARIO
-============================== */
-
 function cargarEnFormulario(p) {
   modoEdicion = true;
   document.getElementById('formTitulo').textContent = 'Editar platillo';
@@ -187,7 +176,6 @@ function cargarEnFormulario(p) {
     img.style.display = 'none';
   }
 
-  // Limpiar input file (el admin sube uno nuevo si quiere cambiar)
   document.getElementById('imagen').value = '';
 }
 
@@ -201,26 +189,15 @@ function resetFormulario() {
   img.style.display = 'none';
 }
 
-/* ==============================
-   SUBMIT (CREAR / EDITAR)
-============================== */
-
 async function onSubmitForm(e) {
   e.preventDefault();
 
   const id = document.getElementById('platilloId').value;
-
   const formEl = document.getElementById('formPlatillo');
   const formData = new FormData(formEl);
 
-  // FormData no necesita que pongas headers de Content-Type
-
-  const url = id
-    ? `${API_URL}/menu/${id}`
-    : `${API_URL}/menu`;
-
-  const method = id ? 'POST' : 'POST'; 
-  // 👀 Laravel acepta PUT si usas method spoofing _method='PUT', lo hacemos así:
+  const url = id ? `${API_URL}/menu/${id}` : `${API_URL}/menu`;
+  const method = id ? 'POST' : 'POST';
 
   if (id) {
     formData.append('_method', 'PUT');
@@ -229,6 +206,7 @@ async function onSubmitForm(e) {
   try {
     const res = await fetch(url, {
       method,
+      headers: authHeaders(true),
       body: formData
     });
 
@@ -242,7 +220,6 @@ async function onSubmitForm(e) {
 
     alert(id ? 'Platillo actualizado correctamente' : 'Platillo creado correctamente');
 
-    // Recargar lista, resetear form
     await cargarPlatillos();
     resetFormulario();
 
@@ -252,16 +229,13 @@ async function onSubmitForm(e) {
   }
 }
 
-/* ==============================
-   ELIMINAR
-============================== */
-
 async function eliminarPlatillo(id) {
   if (!confirm('¿Seguro que deseas eliminar este platillo?')) return;
 
   try {
     const res = await fetch(`${API_URL}/menu/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: authHeaders()
     });
 
     const data = await res.json();
@@ -274,7 +248,6 @@ async function eliminarPlatillo(id) {
     alert('Platillo eliminado correctamente');
     await cargarPlatillos();
 
-    // Si estabas editando este mismo, limpia el formulario
     const formId = document.getElementById('platilloId').value;
     if (formId && Number(formId) === id) {
       resetFormulario();

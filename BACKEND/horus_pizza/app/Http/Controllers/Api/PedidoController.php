@@ -10,13 +10,13 @@ use Illuminate\Http\Request;
 
 class PedidoController extends Controller
 {
-    // ✔ LISTAR TODOS LOS PEDIDOS
+    // �o" LISTAR TODOS LOS PEDIDOS
     public function index()
     {
         return response()->json(Pedido::all());
     }
 
-    // ✔ MOSTRAR UN PEDIDO POR ID
+    // �o" MOSTRAR UN PEDIDO POR ID
     public function show($id)
     {
         $pedido = Pedido::findOrFail($id);
@@ -25,7 +25,7 @@ class PedidoController extends Controller
 
 
   
-    // ✔ Pedido con mesa, empleado y detalles (con platillos)
+    // �o" Pedido con mesa, empleado y detalles (con platillos)
     public function showCompleto($id)
     {
         $pedido = Pedido::with([
@@ -38,7 +38,7 @@ class PedidoController extends Controller
     }
     
 
-    // ✔ Obtener pedido activo de una mesa
+    // �o" Obtener pedido activo de una mesa
 public function pedidoActivoPorMesa($idMesa)
 {
     $pedido = Pedido::where('id_mesa', $idMesa)
@@ -57,7 +57,7 @@ public function pedidoActivoPorMesa($idMesa)
 
 
 
-    // ✔ CREAR PEDIDO
+    // �o" CREAR PEDIDO
    public function store(Request $request)
 {
     $validated = $request->validate([
@@ -65,7 +65,7 @@ public function pedidoActivoPorMesa($idMesa)
         'id_empleado' => 'required|integer|exists:empleados,id_empleado',
     ]);
 
-    // ✅ Verificar que no haya un pedido activo en esa mesa
+    // �o. Verificar que no haya un pedido activo en esa mesa
     $existeActivo = Pedido::where('id_mesa', $validated['id_mesa'])
         ->whereIn('estado', ['Pendiente', 'En preparación', 'Listo', 'Servido'])
         ->exists();
@@ -76,7 +76,7 @@ public function pedidoActivoPorMesa($idMesa)
         ], 400);
     }
 
-    // ❌ YA NO TOCAMOS EL ESTADO DE LA MESA AQUÍ
+    // �?O YA NO TOCAMOS EL ESTADO DE LA MESA AQU�?
 
     $pedido = Pedido::create([
         'id_mesa'     => $validated['id_mesa'],
@@ -92,7 +92,7 @@ public function pedidoActivoPorMesa($idMesa)
 }
 
 
-    // ✔ ACTUALIZAR PEDIDO
+    // �o" ACTUALIZAR PEDIDO
     public function update(Request $request, $id)
 {
     $pedido = Pedido::findOrFail($id);
@@ -104,7 +104,7 @@ public function pedidoActivoPorMesa($idMesa)
         'total'       => 'sometimes|numeric'
     ]);
 
-    // 🔁 Cambio de mesa (si lo usas)
+    // �Y"? Cambio de mesa (si lo usas)
     if ($request->has('id_mesa')) {
         $mesaAnterior = Mesa::find($pedido->id_mesa);
         if ($mesaAnterior) {
@@ -116,27 +116,27 @@ public function pedidoActivoPorMesa($idMesa)
 
         $tieneActivo = Pedido::where('id_mesa', $validated['id_mesa'])
             ->where('id_pedido', '!=', $pedido->id_pedido)
-            ->whereIn('estado', ['Pendiente', 'En preparación', 'Listo', 'Servido'])
-            ->exists();
+        ->whereIn('estado', ['Pendiente', 'En preparación', 'Listo', 'Servido'])
+        ->exists();
 
         if ($tieneActivo) {
             return response()->json(['message' => 'La nueva mesa ya tiene un pedido activo'], 400);
         }
     }
 
-    // ✅ Si cambia el estado del pedido, actualizamos el estado de la mesa
+    // �o. Si cambia el estado del pedido, actualizamos el estado de la mesa
     if (isset($validated['estado'])) {
         $mesa = Mesa::find($pedido->id_mesa);
 
         if ($mesa) {
             if (in_array($validated['estado'], ['En preparación', 'Listo', 'Servido'])) {
-                // Cuando ya está en cocina / listo / servido
+                // Cuando ya estǭ en cocina / listo / servido
                 $mesa->estado = 'Ocupada';
             } elseif ($validated['estado'] === 'Pagado') {
-                // Cuando ya se pagó (Caja)
+                // Cuando ya se pag�� (Caja)
                 $mesa->estado = 'Disponible';
             } elseif ($validated['estado'] === 'Pendiente') {
-                // Si quieres, puede seguir como Disponible mientras solo está tomando el pedido
+                // Si quieres, puede seguir como Disponible mientras solo estǭ tomando el pedido
                 $mesa->estado = 'Disponible';
             }
 
@@ -153,7 +153,7 @@ public function pedidoActivoPorMesa($idMesa)
 }
 
 
-    // ✔ ELIMINAR PEDIDO
+    // �o" ELIMINAR PEDIDO
     public function destroy($id)
     {
         $pedido = Pedido::findOrFail($id);
@@ -169,7 +169,7 @@ public function pedidoActivoPorMesa($idMesa)
         return response()->json(['message' => 'Pedido eliminado correctamente']);
     }
 
-    // 👨‍🍳 Pedidos para cocina: Pendientes o En preparación
+    // �Y'��??�Y?� Pedidos para cocina: Pendientes o En preparación
 public function pedidosCocina()
 {
     $pedidos = Pedido::with([
@@ -178,7 +178,7 @@ public function pedidosCocina()
             'detalles.platillo'
         ])
         ->whereIn('estado', ['Pendiente', 'En preparación'])
-        // ✅ Solo pedidos que tengan al menos un detalle
+        // �o. Solo pedidos que tengan al menos un detalle
         ->whereHas('detalles')
         ->orderBy('fecha_pedido', 'asc')
         ->get();
@@ -189,7 +189,7 @@ public function pedidosCocina()
 
 public function pedidosParaCaja()
 {
-    // Pedidos que ya pasaron por cocina y están listos para cobrar
+    // Pedidos que ya pasaron por cocina y estǭn listos para cobrar
     $pedidos = Pedido::with([
             'mesa',
             'empleado',

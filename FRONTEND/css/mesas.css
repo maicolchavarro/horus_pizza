@@ -1,9 +1,14 @@
+/* Mesas - diseño renovado con fondo claro y barra superior en verde/naranja */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #ff9966, #ff4d4d);
-  color: white;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  background: #eef2f7;
+  color: #1f1f1f;
   min-height: 100vh;
 }
 
@@ -11,61 +16,227 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background: rgba(0, 0, 0, 0.2);
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  color: #1f1f1f;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f5f7fa;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  background-image: url("../logo_Horus.png");
+  background-size: 75%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: 0.3px;
+}
+
+.brand-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.user-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #1f1f1f;
+  letter-spacing: 0.2px;
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e9f7ed;
+  color: #2e7d32;
+  border: 2px solid rgba(46, 125, 50, 0.25);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  font-weight: 800;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #6c757d;
 }
 
 button {
-  background-color: #fff;
+  background: #ffffff;
   color: #ff4d4d;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.65rem 1.1rem;
+  border-radius: 12px;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: 700;
+  letter-spacing: 0.25px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 button:hover {
-  background-color: #ffcccc;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.16);
+  filter: brightness(0.97);
+}
+
+main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1.25rem 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .mesas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 780px; /* 2 columnas máximo en desktop */
+}
+
+@media (max-width: 960px) {
+  .mesas-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .mesas-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .mesa-card {
-  background: white;
-  color: #333;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  padding: 1rem;
-  text-align: center;
-  transition: transform 0.2s;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 0.95rem 0.95rem 0.9rem;
+  color: #1f1f1f;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .mesa-card:hover {
-  transform: scale(1.05);
-}
-
-.mesa-card.disponible {
-  border-left: 6px solid #4CAF50;
-}
-
-.mesa-card.ocupada {
-  border-left: 6px solid #FF9800;
-}
-
-.mesa-card.reservada {
-  border-left: 6px solid #f44336;
+  transform: translateY(-4px);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.14);
 }
 
 .mesa-card h3 {
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
 }
 
-.estado {
-  font-weight: bold;
+.mesa-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+  color: #4a4a4a;
+  font-size: 0.92rem;
+}
+
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.estado-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.mesa-card .cta {
+  margin-top: 0.3rem;
+  font-size: 0.88rem;
+  color: #5a5a5a;
+}
+
+.mesa-card.disponible {
+  border-left: 5px solid #4caf50;
+}
+
+.mesa-card.disponible .estado-badge {
+  color: #2e7d32;
+  border-color: rgba(76, 175, 80, 0.35);
+}
+
+.mesa-card.disponible .estado-dot {
+  background: #4caf50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.55);
+}
+
+.mesa-card.ocupada {
+  border-left: 5px solid #ff9800;
+}
+
+.mesa-card.ocupada .estado-badge {
+  color: #e57c00;
+  border-color: rgba(255, 152, 0, 0.35);
+}
+
+.mesa-card.ocupada .estado-dot {
+  background: #ff9800;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.55);
+}
+
+.mesa-card.reservada {
+  border-left: 5px solid #f44336;
+}
+
+.mesa-card.reservada .estado-badge {
+  color: #c62828;
+  border-color: rgba(244, 67, 54, 0.35);
+}
+
+.mesa-card.reservada .estado-dot {
+  background: #f44336;
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.55);
 }

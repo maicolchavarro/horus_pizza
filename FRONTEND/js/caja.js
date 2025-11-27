@@ -6,8 +6,15 @@ let pedidosCaja = [];
 let pedidoSeleccionado = null;
 let totalSeleccionado = 0;
 
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', Accept: 'application/json', ...base };
+  return { Accept: 'application/json', ...base };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  empleado = JSON.parse(localStorage.getItem('empleado'));
+  empleado = JSON.parse(sessionStorage.getItem('empleado'));
 
   if (!empleado) {
     window.location.href = './login.html';
@@ -16,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const logoutBtn = document.getElementById('logoutBtn');
   logoutBtn.addEventListener('click', () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = './login.html';
   });
 
@@ -24,19 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnCancelarPago').addEventListener('click', cerrarModalPago);
   document.getElementById('btnConfirmarPago').addEventListener('click', confirmarPago);
 
-  // Cargar al inicio
   cargarPedidosParaCaja();
-  // Refrescar cada 10 segundos
   setInterval(cargarPedidosParaCaja, 10000);
 });
 
-/* ==============================
-   CARGAR PEDIDOS LISTOS
-============================== */
-
 async function cargarPedidosParaCaja() {
   try {
-    const res = await fetch(`${API_URL}/pedidos-caja`);
+    const res = await fetch(`${API_URL}/pedidos-caja`, { headers: authHeaders() });
     if (!res.ok) {
       console.error('No se pudieron cargar los pedidos para caja');
       return;
@@ -91,10 +92,6 @@ function renderPedidos() {
     ul.appendChild(li);
   });
 }
-
-/* ==============================
-   SELECCIONAR PEDIDO
-============================== */
 
 function seleccionarPedido(pedido) {
   pedidoSeleccionado = pedido;
@@ -151,26 +148,18 @@ function limpiarDetalle() {
   document.getElementById('btnRealizarPago').disabled = true;
 }
 
-/* ==============================
-   CÁLCULO DE TOTALES
-============================== */
-
 function calcularTotalesPedido(pedido) {
   const subtotal = (pedido.detalles || []).reduce(
     (sum, d) => sum + Number(d.subtotal),
     0
   );
 
-  const tasaIva = 0.00; // 0.19 si quieres usar IVA luego
+  const tasaIva = 0.00;
   const impuesto = subtotal * tasaIva;
   const total = subtotal + impuesto;
 
   return { subtotal, impuesto, total };
 }
-
-/* ==============================
-   MODAL PAGO
-============================== */
 
 function abrirModalPago() {
   if (!pedidoSeleccionado) {
@@ -188,10 +177,6 @@ function cerrarModalPago() {
   document.getElementById('modalPago').classList.add('oculto');
 }
 
-/* ==============================
-   CONFIRMAR PAGO = FACTURAR + LIBERAR MESA + LIMPIAR DETALLE
-============================== */
-
 async function confirmarPago() {
   if (!pedidoSeleccionado) {
     alert('No hay pedido seleccionado');
@@ -203,7 +188,7 @@ async function confirmarPago() {
   try {
     const res = await fetch(`${API_URL}/facturas`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(true),
       body: JSON.stringify({
         id_pedido: pedidoSeleccionado.id_pedido,
         metodo_pago: metodoPago
@@ -218,16 +203,16 @@ async function confirmarPago() {
     }
 
     const factura = data.factura;
-    alert('Pago realizado y factura generada ✅');
+    alert('Pago realizado y factura generada.');
 
-    // Obtener factura completa para imprimir
-    const facturaRes = await fetch(`${API_URL}/facturas/${factura.id_factura}`);
+    const facturaRes = await fetch(`${API_URL}/facturas/${factura.id_factura}`, {
+      headers: authHeaders()
+    });
     const facturaCompleta = await facturaRes.json();
 
     cerrarModalPago();
     imprimirTicket(facturaCompleta);
 
-    // Recargar pedidos (este ya no debe aparecer) y limpiar pantalla
     await cargarPedidosParaCaja();
     limpiarDetalle();
 
@@ -236,10 +221,6 @@ async function confirmarPago() {
     alert('Error al procesar el pago');
   }
 }
-
-/* ==============================
-   IMPRIMIR TICKET (PDF/IMPRESORA)
-============================== */
 
 function imprimirTicket(factura) {
   const w = window.open('', '_blank', 'width=300,height=600');
@@ -263,7 +244,7 @@ function imprimirTicket(factura) {
         body {
           margin: 0;
           padding: 6px;
-          width: 80mm; /* ancho típico impresora térmica */
+          width: 80mm;
         }
         .ticket { font-size: 12px; }
         .centro { text-align: center; }

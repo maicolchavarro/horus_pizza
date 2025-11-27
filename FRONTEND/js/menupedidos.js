@@ -2,10 +2,17 @@
 const API_URL = 'http://127.0.0.1:8000/api/v1';
 
 let pedidoActual = null;
-let pedidoData = null; // aquí guardamos el pedido completo
+let pedidoData = null;
+
+function authHeaders(json = false) {
+  const token = sessionStorage.getItem('token');
+  const base = token ? { Authorization: `Bearer ${token}` } : {};
+  if (json) return { 'Content-Type': 'application/json', Accept: 'application/json', ...base };
+  return { Accept: 'application/json', ...base };
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
-  pedidoActual = JSON.parse(localStorage.getItem('pedido_actual'));
+  pedidoActual = JSON.parse(sessionStorage.getItem('pedido_actual'));
 
   if (!pedidoActual) {
     alert('No hay pedido seleccionado');
@@ -23,14 +30,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function cargarPedido() {
   try {
-    const res = await fetch(`${API_URL}/pedidos/${pedidoActual.id_pedido}/detalle-completo`);
+    const res = await fetch(`${API_URL}/pedidos/${pedidoActual.id_pedido}/detalle-completo`, {
+      headers: authHeaders(),
+    });
     if (!res.ok) {
       console.error('Error al cargar el pedido');
       return;
     }
 
     const pedido = await res.json();
-    pedidoData = pedido; // guardar para saber estado
+    pedidoData = pedido;
 
     const lista = document.getElementById('listaPedido');
     lista.innerHTML = '';
@@ -74,8 +83,6 @@ async function cargarPedido() {
     });
 
     document.getElementById('totalPedido').textContent = pedido.total ?? 0;
-
-    // 🔁 Ajustar botón "Enviar a cocina" según el estado
     actualizarBotonEnviar(pedido.estado);
 
   } catch (err) {
@@ -99,7 +106,6 @@ function actualizarBotonEnviar(estado) {
     btn.disabled = true;
     btn.textContent = 'Pedido pagado';
   } else {
-    // cualquier otro estado raro
     btn.disabled = true;
     btn.textContent = estado;
   }
@@ -109,7 +115,7 @@ async function cambiarCantidad(idDetalle, nuevaCantidad) {
   try {
     await fetch(`${API_URL}/detalles/${idDetalle}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(true),
       body: JSON.stringify({ cantidad: nuevaCantidad })
     });
 
@@ -122,7 +128,8 @@ async function cambiarCantidad(idDetalle, nuevaCantidad) {
 async function eliminarDetalle(idDetalle) {
   try {
     await fetch(`${API_URL}/detalles/${idDetalle}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: authHeaders()
     });
 
     await cargarPedido();
@@ -131,16 +138,11 @@ async function eliminarDetalle(idDetalle) {
   }
 }
 
-/**
- * 🟠 Enviar a cocina:
- * - Cambia el estado del pedido a "En preparación"
- * - El backend (PedidoController@update) se encarga de marcar la mesa como "Ocupada"
- */
 async function enviarACocina() {
   try {
     const res = await fetch(`${API_URL}/pedidos/${pedidoActual.id_pedido}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(true),
       body: JSON.stringify({ estado: 'En preparación' })
     });
 
@@ -150,9 +152,7 @@ async function enviarACocina() {
       return;
     }
 
-    alert('Pedido enviado a cocina ✅');
-
-    // Recargar información para ver estado actualizado
+    alert('Pedido enviado a cocina.');
     await cargarPedido();
 
   } catch (err) {
@@ -161,7 +161,6 @@ async function enviarACocina() {
   }
 }
 
-/* Navegación inferior (si la usas en esta vista) */
 function irMesas() {
   window.location.href = './mesas.html';
 }
