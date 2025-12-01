@@ -60,18 +60,32 @@
   bottom: 56px; /* altura de bottom-nav */
   background: #fff;
   border-top: 1px solid #eee;
-  padding: 8px 12px;
+  padding: 12px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .footer-pedido button {
-  background: #e76f51;
   border: none;
   color: #fff;
-  padding: 8px 14px;
-  border-radius: 999px;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 14px;
   cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+}
+
+#btnEnviar {
+  background: linear-gradient(135deg, #f77f00 0%, #0acb37 100%);
+}
+
+#btnCancelar {
+  background: linear-gradient(135deg, #f44336 0%, #ff9800 100%);
 }

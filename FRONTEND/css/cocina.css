@@ -1,109 +1,198 @@
-/* FRONTEND/css/cocina.css */
-
+/* FRONTEND/css/cocina.css - rediseño cocina */
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #121212;
-  color: #f5f5f5;
+  font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+  background: #eef2f7;
+  color: #1f1f1f;
 }
 
-/* Header */
 .top-bar {
-  padding: 12px 16px;
+  padding: 14px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1f1f1f;
-  border-bottom: 1px solid #333;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .top-bar h1 {
   font-size: 18px;
   margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f5f7fa;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  background-image: url("../logo_Horus.png");
+  background-size: 75%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: 0.3px;
+}
+
+.brand-sub {
+  display: block;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.user-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #1f1f1f;
+  letter-spacing: 0.2px;
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e9f7ed;
+  color: #2e7d32;
+  border: 2px solid rgba(46, 125, 50, 0.25);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  font-weight: 800;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #6c757d;
 }
 
 .btn-salir {
-  background: #e76f51;
+  background: linear-gradient(135deg, #f44336 0%, #ff9800 100%);
   border: none;
   color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-/* Contenedor de pedidos */
+.btn-salir:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(0,0,0,0.14);
+}
+
 .pedidos-container {
-  padding: 12px;
+  padding: 16px;
   display: grid;
   gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Tarjeta de pedido */
 .pedido-card {
-  background: #1e1e1e;
-  border-radius: 10px;
-  padding: 10px 12px;
-  border: 1px solid #2a2a2a;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .pedido-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
 }
 
 .pedido-mesa {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
 }
 
 .pedido-estado {
   font-size: 12px;
-  padding: 2px 6px;
+  padding: 4px 10px;
   border-radius: 999px;
   text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
 .estado-pendiente {
-  background: rgba(255, 193, 7, 0.1);
-  color: #ffc107;
+  background: #fff7e6;
+  color: #d26a00;
 }
 
 .estado-preparacion {
-  background: rgba(33, 150, 243, 0.1);
-  color: #2196f3;
+  background: #e8f4ff;
+  color: #1d7ed6;
 }
 
-/* Info adicional */
 .pedido-info {
   font-size: 12px;
-  color: #aaa;
-  margin-bottom: 6px;
+  color: #666;
+  display: flex;
+  justify-content: space-between;
 }
 
-/* Lista de items */
 .pedido-items {
   list-style: none;
   margin: 0;
   padding: 0;
   font-size: 13px;
+  background: #f8fafc;
+  border: 1px solid rgba(0,0,0,0.04);
+  border-radius: 10px;
 }
 
 .pedido-items li {
   display: flex;
   justify-content: space-between;
-  padding: 3px 0;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e6ecf2;
 }
 
-/* Botones de acción */
+.pedido-items li:last-child {
+  border-bottom: none;
+}
+
 .pedido-actions {
-  margin-top: 8px;
+  margin-top: 4px;
   display: flex;
   gap: 8px;
 }
@@ -111,27 +200,33 @@ body {
 .btn-action {
   flex: 1;
   font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 8px 14px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 18px rgba(0,0,0,0.12);
+  filter: brightness(1.02);
 }
 
 .btn-tomar {
-  background: #2196f3;
-  color: #fff;
+  background: linear-gradient(135deg, #1d7ed6 0%, #4da3ff 100%);
 }
 
 .btn-listo {
-  background: #4caf50;
-  color: #fff;
+  background: linear-gradient(135deg, #0acb37 0%, #4caf50 100%);
 }
 
-/* Footer */
 .footer-info {
   text-align: center;
-  padding: 6px 8px;
+  padding: 10px;
   font-size: 11px;
-  color: #888;
-  border-top: 1px solid #333;
+  color: #6c757d;
 }

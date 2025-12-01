@@ -6,9 +6,9 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f4f5fb;
-  color: #222;
+  font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+  background: #f3f6fb;
+  color: #1f2933;
 }
 
 /* HEADER / NAVBAR */
@@ -16,25 +16,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 18px;
-  background: #1f2933;
+  padding: 12px 18px;
+  background: #111827;
   color: #fff;
   gap: 16px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .brand-logo {
-  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #0f172a url("../logo_Horus.png") center/72% no-repeat;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 
 .brand-text h1 {
   margin: 0;
   font-size: 18px;
+  letter-spacing: 0.4px;
 }
 
 .brand-text .subtitle {
@@ -45,51 +54,66 @@ body {
 .admin-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   justify-content: center;
 }
 
 .nav-item {
-  border: none;
-  border-radius: 999px;
-  padding: 6px 12px;
-  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.08);
   color: #e5e7eb;
   font-size: 13px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
 }
 
 .nav-item--active {
-  background: #374151;
-  color: #fff;
+  background: #fff;
+  color: #0f172a;
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
 }
 
 .nav-item:hover {
-  background: #374151;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .btn-logout {
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: #e76f51;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f44336 0%, #ff9800 100%);
   color: #fff;
   cursor: pointer;
   font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-logout:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.2);
 }
 
 /* MAIN */
 .admin-main {
-  padding: 18px 18px 30px;
-  max-width: 1100px;
+  padding: 20px 18px 32px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 /* TITULOS SECCIONES */
 .admin-main h2 {
-  margin: 10px 0 12px;
+  margin: 10px 0 14px;
   font-size: 20px;
+  letter-spacing: 0.2px;
 }
 
 /* CARDS RESUMEN */
@@ -99,18 +123,24 @@ body {
   gap: 14px;
 }
 
+.cards-row--secondary {
+  margin-top: 12px;
+}
+
 .card {
   background: #ffffff;
   border-radius: 16px;
-  padding: 12px 12px;
+  padding: 14px 14px;
   display: flex;
   gap: 10px;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .card-highlight {
   border: 1px solid #3b82f6;
+  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.18);
 }
 
 .card-icon {
@@ -132,8 +162,8 @@ body {
 
 .card-value {
   font-size: 20px;
-  font-weight: 600;
-  color: #111827;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .card-subtext {
@@ -141,43 +171,62 @@ body {
   color: #16a34a;
 }
 
-/* ACCIONES RÁPIDAS */
-.section-acciones {
-  margin-top: 20px;
+.mini-card .card-value {
+  font-size: 18px;
 }
 
-.quick-actions {
+/* ACCIONES RÁPIDAS */
+.section-acciones {
+  margin-top: 24px;
+}
+
+.acciones-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
-.quick-card {
-  border: none;
-  background: #f9fafb;
+.accion-card {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: #ffffff;
   border-radius: 14px;
-  padding: 18px 10px;
+  padding: 14px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+  transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.accion-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.18);
+}
+
+.accion-icon {
+  font-size: 24px;
+}
+
+.accion-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+  gap: 2px;
+  align-items: flex-start;
 }
 
-.quick-card:hover {
-  background: #eef2ff;
-}
-
-.quick-icon {
-  font-size: 26px;
-}
-
-.quick-title {
+.accion-title {
   font-size: 13px;
+  font-weight: 700;
 }
 
-/* FACTURAS */
+.accion-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* FACTURAS / TABLES */
 .section-facturas {
   margin-top: 24px;
 }
@@ -192,8 +241,9 @@ body {
   margin-top: 8px;
   background: #fff;
   border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+  padding: 10px;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .tabla-facturas {
@@ -204,14 +254,14 @@ body {
 
 .tabla-facturas th,
 .tabla-facturas td {
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
 }
 
 .tabla-facturas th {
   background: #f9fafb;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* GESTIÓN MENÚ / RECURSOS */
@@ -236,7 +286,7 @@ body {
 .btn-secondary {
   border: none;
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   cursor: pointer;
 }
@@ -254,14 +304,14 @@ body {
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .cards-row,
-  .quick-actions {
+  .acciones-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 600px) {
   .cards-row,
-  .quick-actions {
+  .acciones-grid {
     grid-template-columns: 1fr;
   }
 
@@ -274,5 +324,4 @@ body {
     justify-content: flex-start;
     flex-wrap: wrap;
   }
-  
 }

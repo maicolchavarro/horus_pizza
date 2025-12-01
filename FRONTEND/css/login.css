@@ -2,131 +2,118 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Poppins", "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at 16% 18%, rgba(255, 122, 0, 0.22), transparent 34%),
-    radial-gradient(circle at 78% 12%, rgba(10, 203, 55, 0.22), transparent 36%),
-    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.04), transparent 40%),
-    linear-gradient(145deg, #0a1116 0%, #0f1c15 45%, #0b1a13 100%);
+  background: radial-gradient(circle at 20% 20%, rgba(255, 169, 92, 0.18), transparent 42%),
+    radial-gradient(circle at 80% 15%, rgba(9, 153, 60, 0.18), transparent 40%),
+    linear-gradient(180deg, #f8fafc 0%, #eef1f6 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #eaf3ed;
+  color: #1f2933;
 }
 
 .login-container {
   position: relative;
-  background: linear-gradient(160deg, rgba(16, 28, 21, 0.96) 0%, rgba(12, 22, 18, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  width: min(360px, 92vw);
+  background: #ffffff;
+  border: 3px solid #08cb00;
   border-radius: 18px;
-  padding: 3.5rem 2.5rem 2.25rem;
-  width: min(380px, 92vw);
-  backdrop-filter: blur(6px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+  padding: 3.4rem 2.2rem 2.35rem;
   text-align: center;
-  overflow: visible;
-  color: #eaf3ed;
+  overflow: hidden;
 }
 
 .login-container::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 10% 15%, rgba(255, 122, 0, 0.14), transparent 46%),
-    radial-gradient(circle at 90% 12%, rgba(8, 203, 0, 0.16), transparent 44%);
-  pointer-events: none;
-}
-
-.login-container::after {
-  content: "";
-  position: absolute;
-  top: -68px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: 120px;
-  height: 120px;
-  background: #0d1812;
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 3px #0d1812,
-    0 0 0 6px rgba(8, 203, 0, 0.75),
-    0 0 0 10px rgba(247, 127, 0, 0.8),
-    0 18px 28px rgba(0, 0, 0, 0.3);
-  background-image: url("../logo_Horus.png");
-  background-size: 74%;
-  background-repeat: no-repeat;
-  background-position: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  background: #f2f4f8 url("../logo_Horus.png") center/70% no-repeat;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .title {
-  margin-top: 2.2rem;
-  margin-bottom: 1.6rem;
-  color: #ff7a00;
-  font-size: 2rem;
+  margin-top: 130px;
+  margin-bottom: 6px;
+  color: #101828;
+  font-size: 1.55rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+}
+
+.title::after {
+  content: "Inicio De Secion";
+  display: block;
+  margin-top: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 .input-group {
-  margin-bottom: 1.05rem;
+  margin-bottom: 1rem;
   text-align: left;
 }
 
 .input-group label {
   display: block;
   font-size: 0.9rem;
-  color: #c7d7c9;
-  margin-bottom: 0.3rem;
+  color: #475467;
+  margin-bottom: 0.35rem;
 }
 
 .input-group input {
   width: 100%;
-  padding: 0.7rem 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
   font-size: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: #f2f6f3;
+  background: #f5f7fb;
+  color: #101828;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: rgba(247, 127, 0, 0.9);
-  box-shadow: 0 0 0 3px rgba(247, 127, 0, 0.15);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: #ff7a00;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2);
 }
 
 .btn-login {
   width: 100%;
-  margin-top: 0.5rem;
-  background: linear-gradient(135deg, #ff7a00 0%, #0acb37 100%);
-  color: #0d1b14;
+  margin-top: 0.75rem;
+  background: linear-gradient(135deg, #ff7a00 0%, #ff8f26 100%);
+  color: #ffffff;
   border: none;
-  padding: 0.85rem;
-  border-radius: 14px;
+  padding: 0.9rem;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: 0.4px;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28), 0 10px 24px rgba(247, 122, 0, 0.35);
+  letter-spacing: 0.2px;
+  box-shadow: 0 12px 24px rgba(255, 122, 0, 0.25);
   transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .btn-login:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(47, 143, 70, 0.35);
+  box-shadow: 0 14px 28px rgba(255, 122, 0, 0.3);
   filter: brightness(1.02);
 }
 
 .btn-login:active {
   transform: translateY(0);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 18px rgba(255, 122, 0, 0.22);
 }
 
 #mensaje {
   margin-top: 1rem;
   font-size: 0.92rem;
-  color: #1f3125;
+  color: #d82c2c;
 }

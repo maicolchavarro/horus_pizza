@@ -8,7 +8,20 @@
 </head>
 <body>
   <header class="top-bar">
-    <h1>Caja - Horus Pizza</h1>
+    <div class="brand">
+      <div class="brand-icon"></div>
+      <div class="brand-text">
+        <h1>Caja</h1>
+        <span class="brand-sub">Cobros y facturas</span>
+      </div>
+    </div>
+    <div class="user-block">
+      <div class="user-avatar" id="userAvatar">C</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">Cajero</div>
+        <div class="user-role" id="userRole">Caja</div>
+      </div>
+    </div>
     <button id="logoutBtn" class="btn-salir">Cerrar sesión</button>
   </header>
 
@@ -34,10 +47,20 @@
             <th>Cant.</th>
             <th>Precio</th>
             <th>Subt.</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="tbodyDetalle"></tbody>
       </table>
+
+      <div class="agregar-item">
+        <div class="agregar-titulo">Agregar producto al pedido</div>
+        <div class="agregar-form">
+          <select id="selectProductoAdd"></select>
+          <input type="number" id="inputCantidadAdd" min="1" value="1" />
+          <button id="btnAgregarItem" class="btn-mini btn-primario">Agregar</button>
+        </div>
+      </div>
 
       <div class="totales">
         <div>Subtotal: $<span id="subTotal">0</span></div>

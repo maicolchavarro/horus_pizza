@@ -5,6 +5,7 @@ let empleado = null;
 let pedidosCaja = [];
 let pedidoSeleccionado = null;
 let totalSeleccionado = 0;
+let menuProductos = [];
 
 function authHeaders(json = false) {
   const token = sessionStorage.getItem('token');
@@ -21,6 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Pintar info de usuario en header
+  const userNameEl = document.getElementById('userName');
+  const userAvatarEl = document.getElementById('userAvatar');
+  const userRoleEl = document.getElementById('userRole');
+  if (userNameEl) {
+    userNameEl.textContent = `${empleado.nombre ?? ''} ${empleado.apellido ?? ''}`.trim() || 'Cajero';
+  }
+  if (userAvatarEl) {
+    const inicial = (empleado.nombre?.[0] || empleado.usuario?.[0] || 'C').toUpperCase();
+    userAvatarEl.textContent = inicial;
+  }
+  if (userRoleEl) {
+    userRoleEl.textContent = empleado.nombre_rol || 'Caja';
+  }
+
   const logoutBtn = document.getElementById('logoutBtn');
   logoutBtn.addEventListener('click', () => {
     sessionStorage.clear();
@@ -30,8 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnRealizarPago').addEventListener('click', abrirModalPago);
   document.getElementById('btnCancelarPago').addEventListener('click', cerrarModalPago);
   document.getElementById('btnConfirmarPago').addEventListener('click', confirmarPago);
+  document.getElementById('btnAgregarItem').addEventListener('click', agregarDetallePedido);
 
   cargarPedidosParaCaja();
+  cargarMenuProductos();
   setInterval(cargarPedidosParaCaja, 10000);
 });
 
@@ -50,6 +68,29 @@ async function cargarPedidosParaCaja() {
   }
 }
 
+async function cargarMenuProductos() {
+  try {
+    const res = await fetch(`${API_URL}/menu`, { headers: authHeaders() });
+    if (!res.ok) return;
+    menuProductos = await res.json();
+    renderSelectProductos();
+  } catch (e) {
+    console.error('No se pudo cargar el menú', e);
+  }
+}
+
+function renderSelectProductos() {
+  const select = document.getElementById('selectProductoAdd');
+  if (!select) return;
+  select.innerHTML = '';
+  menuProductos.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id_platillo;
+    opt.textContent = `${p.nombre} - $${Number(p.precio).toLocaleString()}`;
+    select.appendChild(opt);
+  });
+}
+
 function renderPedidos() {
   const ul = document.getElementById('listaPedidosCaja');
   ul.innerHTML = '';
@@ -63,6 +104,9 @@ function renderPedidos() {
   pedidosCaja.forEach(p => {
     const li = document.createElement('li');
     li.classList.add('item-pedido');
+    if (pedidoSeleccionado && pedidoSeleccionado.id_pedido === p.id_pedido) {
+      li.classList.add('activo');
+    }
 
     const descripcionMesa = p.mesa
       ? `Mesa ${p.mesa.numero_mesa}`
@@ -118,12 +162,37 @@ function seleccionarPedido(pedido) {
 
     tr.innerHTML = `
       <td>${nombre}</td>
-      <td>${det.cantidad}</td>
+      <td>
+        <input type="number" min="1" value="${det.cantidad}" class="input-cant" data-detalle="${det.id_detalle}" />
+      </td>
       <td>$${precio.toLocaleString()}</td>
       <td>$${subtotal.toLocaleString()}</td>
+      <td class="acciones">
+        <button class="btn-mini btn-primario" data-accion="actualizar" data-id="${det.id_detalle}">Actualizar</button>
+        <button class="btn-mini btn-secundario" data-accion="eliminar" data-id="${det.id_detalle}">Eliminar</button>
+      </td>
     `;
 
     tbody.appendChild(tr);
+  });
+
+  // listeners de acciones en la tabla
+  tbody.querySelectorAll('button[data-accion]').forEach(btn => {
+    btn.addEventListener('click', (ev) => {
+      const accion = ev.currentTarget.dataset.accion;
+      const idDetalle = ev.currentTarget.dataset.id;
+      if (accion === 'actualizar') {
+        const input = tbody.querySelector(`input[data-detalle="${idDetalle}"]`);
+        const nuevaCantidad = Number(input?.value || 0);
+        if (nuevaCantidad < 1) {
+          alert('La cantidad debe ser al menos 1');
+          return;
+        }
+        actualizarDetalle(idDetalle, nuevaCantidad);
+      } else if (accion === 'eliminar') {
+        eliminarDetalle(idDetalle);
+      }
+    });
   });
 
   const { subtotal, impuesto, total } = calcularTotalesPedido(pedido);
@@ -146,6 +215,106 @@ function limpiarDetalle() {
   document.getElementById('impuesto').textContent = '0';
   document.getElementById('total').textContent = '0';
   document.getElementById('btnRealizarPago').disabled = true;
+}
+
+async function recargarPedidoSeleccionado() {
+  if (!pedidoSeleccionado) return;
+  try {
+    const res = await fetch(`${API_URL}/pedidos/${pedidoSeleccionado.id_pedido}`, { headers: authHeaders() });
+    if (!res.ok) return;
+    const pedidoRefrescado = await res.json();
+    // algunos endpoints no incluyen detalles/mesa/empleado; intentar traer completo
+    let pedidoCompleto = pedidoRefrescado;
+    const resDetalle = await fetch(`${API_URL}/pedidos/${pedidoSeleccionado.id_pedido}/detalle-completo`, { headers: authHeaders() });
+    if (resDetalle.ok) {
+      pedidoCompleto = await resDetalle.json();
+    }
+    // sincronizar con lista principal
+    pedidosCaja = pedidosCaja.map(p =>
+      p.id_pedido === pedidoCompleto.id_pedido ? pedidoCompleto : p
+    );
+    seleccionarPedido(pedidoCompleto);
+    renderPedidos();
+  } catch (e) {
+    console.error('No se pudo recargar el pedido', e);
+  }
+}
+
+async function actualizarDetalle(idDetalle, cantidad) {
+  if (!pedidoSeleccionado) return;
+  try {
+    const res = await fetch(`${API_URL}/detalles/${idDetalle}`, {
+      method: 'PUT',
+      headers: authHeaders(true),
+      body: JSON.stringify({ cantidad })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.message || 'No se pudo actualizar el detalle');
+      return;
+    }
+    await recargarPedidoSeleccionado();
+  } catch (e) {
+    console.error('Error al actualizar detalle', e);
+    alert('Error al actualizar detalle');
+  }
+}
+
+async function eliminarDetalle(idDetalle) {
+  if (!pedidoSeleccionado) return;
+  if (!confirm('¿Eliminar este ítem del pedido?')) return;
+  try {
+    const res = await fetch(`${API_URL}/detalles/${idDetalle}`, {
+      method: 'DELETE',
+      headers: authHeaders()
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.message || 'No se pudo eliminar el detalle');
+      return;
+    }
+    await recargarPedidoSeleccionado();
+  } catch (e) {
+    console.error('Error al eliminar detalle', e);
+    alert('Error al eliminar detalle');
+  }
+}
+
+async function agregarDetallePedido(ev) {
+  ev.preventDefault();
+  if (!pedidoSeleccionado) {
+    alert('Selecciona un pedido primero');
+    return;
+  }
+  const select = document.getElementById('selectProductoAdd');
+  const inputCant = document.getElementById('inputCantidadAdd');
+  const id_platillo = Number(select?.value || 0);
+  const cantidad = Number(inputCant?.value || 0);
+  if (!id_platillo || cantidad < 1) {
+    alert('Selecciona un producto y cantidad válida');
+    return;
+  }
+  try {
+    const res = await fetch(`${API_URL}/detalles`, {
+      method: 'POST',
+      headers: authHeaders(true),
+      body: JSON.stringify({
+        id_pedido: pedidoSeleccionado.id_pedido,
+        id_platillo,
+        cantidad
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.message || 'No se pudo agregar el producto');
+      return;
+    }
+    await recargarPedidoSeleccionado();
+    inputCant.value = '1';
+  } catch (e) {
+    console.error('Error al agregar detalle', e);
+    alert('Error al agregar producto');
+  }
 }
 
 function calcularTotalesPedido(pedido) {
@@ -271,7 +440,7 @@ function imprimirTicket(factura) {
         <div class="centro">
           <strong>HORUS PIZZA</strong><br>
           NIT/ID: 123456789-0<br>
-          Cra X #X-XX Tunja<br>
+          Cl. 151 #103b-40<br>
           Tel: 300 000 0000<br>
         </div>
 
@@ -313,7 +482,7 @@ function imprimirTicket(factura) {
 
         <div class="centro">
           ¡Gracias por su compra!<br>
-          Vuelva pronto 🍕
+          Vuelva pronto 
         </div>
       </div>
     </body>

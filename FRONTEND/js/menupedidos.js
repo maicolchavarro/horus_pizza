@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     `Mesa ${pedidoActual.numero_mesa} - Pedido #${pedidoActual.id_pedido}`;
 
   document.getElementById('btnEnviar').addEventListener('click', enviarACocina);
+  document.getElementById('btnCancelar').addEventListener('click', cancelarPedido);
 
   await cargarPedido();
 });
@@ -158,6 +159,34 @@ async function enviarACocina() {
   } catch (err) {
     console.error('Error enviando a cocina', err);
     alert('Error al enviar el pedido a cocina');
+  }
+}
+
+async function cancelarPedido() {
+  if (!confirm('¿Seguro que deseas cancelar este pedido?')) return;
+
+  try {
+    const res = await fetch(`${API_URL}/pedidos/${pedidoActual.id_pedido}`, {
+      method: 'DELETE',
+      headers: authHeaders()
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      alert(data.message || 'No se pudo cancelar el pedido');
+      return;
+    }
+
+    sessionStorage.removeItem('pedido_actual');
+    sessionStorage.removeItem('mesaSeleccionada');
+
+    alert('Pedido cancelado y mesa liberada.');
+    window.location.href = './mesas.html';
+
+  } catch (err) {
+    console.error('Error cancelando pedido', err);
+    alert('Error al cancelar el pedido');
   }
 }
 

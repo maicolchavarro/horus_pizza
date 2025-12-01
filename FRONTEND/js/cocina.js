@@ -19,6 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const userNameEl = document.getElementById('userName');
+  const userAvatarEl = document.getElementById('userAvatar');
+  const userRoleEl = document.querySelector('.user-role');
+  if (userNameEl) {
+    userNameEl.textContent = `${empleado.nombre ?? ''} ${empleado.apellido ?? ''}`.trim() || 'Cocinero';
+  }
+  if (userAvatarEl) {
+    const inicial = (empleado.nombre?.[0] || empleado.usuario?.[0] || 'C').toUpperCase();
+    userAvatarEl.textContent = inicial;
+  }
+  if (userRoleEl) {
+    userRoleEl.textContent = empleado.nombre_rol || 'Cocina';
+  }
+
   const rol = empleado.nombre_rol?.toLowerCase();
   if (rol !== 'cocinero') {
     alert('No tienes permiso para ver esta pantalla.');
